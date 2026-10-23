@@ -48,9 +48,13 @@ export interface Course {
   colorScheme: 'indigo' | 'emerald' | 'amber' | 'rose' | 'sky';
   chapters: Chapter[];
   featured?: boolean;
+  createdAt?: string;
 }
 
 export interface CourseProgress {
+  id?: string;
+  userId?: string;
+  courseId?: string;
   completedLessonIds: string[];
   quizScores: Record<string, number>; // quizId -> score percentage
   enrolledAt: string;
@@ -72,9 +76,24 @@ export interface GamificationProfile {
   badges: Badge[];
 }
 
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  photoURL?: string;
+  role: 'student' | 'superadmin';
+  xp: number;
+  streakDays: number;
+  lastActiveDate: string;
+  createdAt: string;
+  badges?: Badge[];
+}
+
 export interface CommunityReply {
   id: string;
+  authorId?: string;
   authorName: string;
+  authorPhotoURL?: string;
   authorRole: 'student' | 'instructor' | 'superadmin';
   createdAt: string;
   contentBn: string;
@@ -86,12 +105,15 @@ export interface CommunityThread {
   id: string;
   courseId: string;
   courseTitleBn: string;
+  authorId?: string;
   authorName: string;
+  authorPhotoURL?: string;
   authorRole: 'student' | 'instructor' | 'superadmin';
   createdAt: string;
   titleBn: string;
   contentBn: string;
   upvotes: number;
+  upvotedUserIds?: string[];
   userUpvoted?: boolean;
   replies: CommunityReply[];
   isPinned?: boolean;
@@ -100,10 +122,11 @@ export interface CommunityThread {
 export interface LeaderboardEntry {
   id: string;
   nameBn: string;
-  districtBn: string;
+  districtBn?: string;
   xp: number;
   streakDays: number;
   completedQuizzes: number;
-  avatarBg: string;
+  avatarBg?: string;
+  photoURL?: string;
   isCurrentUser?: boolean;
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLearning } from '../context/LearningContext';
 import { Course, Lesson, Chapter, CourseCategory } from '../types';
+import { Pagination } from './Pagination';
 import { 
   ShieldCheck, 
   BookOpen, 
@@ -23,7 +24,9 @@ export const AdminPanel: React.FC = () => {
   const { 
     courses, 
     communityThreads, 
-    enrolledProgress,
+    enrolledProgress, 
+    currentUser,
+    leaderboardUsers,
     adminAddCourse, 
     adminDeleteCourse,
     adminAddLesson,
@@ -35,6 +38,12 @@ export const AdminPanel: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'courses' | 'students' | 'moderation'>('courses');
   const [selectedCourseId, setSelectedCourseId] = useState<string>(courses[0]?.id || '');
+
+  // Pagination states for Tab 2 and Tab 3
+  const [studentsPage, setStudentsPage] = useState(1);
+  const STUDENTS_PER_PAGE = 6;
+  const [moderationPage, setModerationPage] = useState(1);
+  const MODERATION_PER_PAGE = 5;
 
   // Add course form modal state
   const [isAddCourseModalOpen, setIsAddCourseModalOpen] = useState(false);
@@ -56,7 +65,7 @@ export const AdminPanel: React.FC = () => {
   // Selected course object
   const selectedCourse = courses.find(c => c.id === selectedCourseId) || courses[0];
 
-  const handleCreateCourse = (e: React.FormEvent) => {
+  const handleCreateCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCourseTitle.trim()) return;
 
@@ -91,7 +100,7 @@ export const AdminPanel: React.FC = () => {
       ]
     };
 
-    adminAddCourse(newCourse);
+    await adminAddCourse(newCourse);
     setSelectedCourseId(newCourse.id);
     setIsAddCourseModalOpen(false);
     setNewCourseTitle('');
@@ -99,7 +108,7 @@ export const AdminPanel: React.FC = () => {
     setNewCourseInstructor('');
   };
 
-  const handleCreateLesson = (e: React.FormEvent) => {
+  const handleCreateLesson = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newLessonTitle.trim() || !selectedCourse || !targetChapterId) return;
 
@@ -132,11 +141,29 @@ export const AdminPanel: React.FC = () => {
       }
     };
 
-    adminAddLesson(selectedCourse.id, targetChapterId, newLesson);
+    await adminAddLesson(selectedCourse.id, targetChapterId, newLesson);
     setIsAddLessonModalOpen(false);
     setNewLessonTitle('');
     setNewLessonSummary('');
   };
+
+  const activeEnrolledCount = Object.keys(enrolledProgress).length;
+
+  if (!currentUser || currentUser.role !== 'superadmin') {
+    return (
+      <div className="max-w-xl mx-auto py-20 px-4 text-center">
+        <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-amber-200 shadow-xs">
+          <ShieldCheck className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-semibold text-slate-900 mb-2">
+          অ্যাডমিন অ্যাক্সেস সীমাবদ্ধ
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-600 mb-6 leading-relaxed">
+          এই ড্যাশবোর্ডটি শুধুমাত্র প্ল্যাটফর্ম অ্যাডমিনিস্ট্রেটরদের জন্য সংরক্ষিত। অনুগ্রহ করে সুপার অ্যাডমিন ক্রেডেনশিয়াল দিয়ে লগইন করুন।
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -152,19 +179,23 @@ export const AdminPanel: React.FC = () => {
             কোর্স কনটেন্ট ও শিক্ষার্থী অগ্রগতি নিয়ন্ত্রণ
           </h1>
           <p className="text-xs text-slate-400 font-normal">
-            প্ল্যাটফর্মের সকল কোর্স, লেকচার ভিডিও, পিডিএফ হ্যান্ডআউট ও কুইজ পরিচালনা করার একক অ্যাডমিন ড্যাশবোর্ড।
+            ফায়ারস্টোর ডেটাবেজে লাইভ সিঙ্ক হওয়া কোর্স, লেকচার, কমিউনিটি প্রশ্ন ও শিক্ষার্থীদের ডেটা পরিচালনা ড্যাশবোর্ড।
           </p>
         </div>
 
-        {/* Global Key Metrics */}
+        {/* Real Key Metrics */}
         <div className="flex items-center gap-6 border-t md:border-t-0 md:border-l border-slate-800 pt-3 md:pt-0 md:pl-6">
           <div>
-            <span className="text-[11px] text-slate-400 block">মোট নিবন্ধিত শিক্ষার্থী</span>
-            <span className="text-xl font-semibold font-mono text-emerald-400">৫,২৯০+</span>
+            <span className="text-[11px] text-slate-400 block">মোট লাইভ কোর্স</span>
+            <span className="text-xl font-semibold font-mono text-emerald-400">{courses.length}টি</span>
           </div>
           <div>
-            <span className="text-[11px] text-slate-400 block">কোর্স সমাপ্তি হার</span>
-            <span className="text-xl font-semibold font-mono text-indigo-400">৭৪.২%</span>
+            <span className="text-[11px] text-slate-400 block">অ্যাক্টিভ এনরোলমেন্ট</span>
+            <span className="text-xl font-semibold font-mono text-indigo-400">{activeEnrolledCount}টি</span>
+          </div>
+          <div>
+            <span className="text-[11px] text-slate-400 block">কমিউনিটি পোস্ট</span>
+            <span className="text-xl font-semibold font-mono text-amber-400">{communityThreads.length}টি</span>
           </div>
         </div>
       </div>
@@ -173,19 +204,19 @@ export const AdminPanel: React.FC = () => {
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
         <button
           onClick={() => setActiveTab('courses')}
-          className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors flex items-center gap-2 ${
+          className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors flex items-center gap-2 cursor-pointer ${
             activeTab === 'courses'
               ? 'bg-indigo-600 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <BookOpen className="w-4 h-4" />
-          <span>কোর্স ও কনটেন্ট পরিচালনা</span>
+          <span>কোর্স ও কনটেন্ট পরিচালনা ({courses.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('students')}
-          className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors flex items-center gap-2 ${
+          className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors flex items-center gap-2 cursor-pointer ${
             activeTab === 'students'
               ? 'bg-indigo-600 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
@@ -197,7 +228,7 @@ export const AdminPanel: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('moderation')}
-          className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors flex items-center gap-2 ${
+          className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors flex items-center gap-2 cursor-pointer ${
             activeTab === 'moderation'
               ? 'bg-indigo-600 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
@@ -232,16 +263,16 @@ export const AdminPanel: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsAddCourseModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>নতুন কোর্স যোগ করুন</span>
               </button>
 
               <button
-                onClick={() => adminDeleteCourse(selectedCourse.id)}
+                onClick={() => selectedCourse && adminDeleteCourse(selectedCourse.id)}
                 disabled={courses.length <= 1}
-                className="inline-flex items-center gap-1.5 px-3 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs rounded-lg transition-colors disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 px-3 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs rounded-lg transition-colors disabled:opacity-40 cursor-pointer"
                 title="কোর্সটি মুছে ফেলুন"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -269,7 +300,7 @@ export const AdminPanel: React.FC = () => {
                         setIsAddLessonModalOpen(true);
                       }
                     }}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>নতুন লেকচার যুক্ত করুন</span>
@@ -292,7 +323,7 @@ export const AdminPanel: React.FC = () => {
                           setTargetChapterId(chapter.id);
                           setIsAddLessonModalOpen(true);
                         }}
-                        className="text-[11px] text-indigo-600 hover:underline flex items-center gap-1 font-medium"
+                        className="text-[11px] text-indigo-600 hover:underline flex items-center gap-1 font-medium cursor-pointer"
                       >
                         <Plus className="w-3 h-3" />
                         এই অধ্যায়ে লেকচার যোগ করুন
@@ -330,7 +361,7 @@ export const AdminPanel: React.FC = () => {
                           <div className="flex items-center gap-2 shrink-0">
                             <button
                               onClick={() => adminDeleteLesson(selectedCourse.id, chapter.id, lesson.id)}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors cursor-pointer"
                               title="লেকচার মুছে ফেলুন"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -357,7 +388,7 @@ export const AdminPanel: React.FC = () => {
               নিবন্ধিত শিক্ষার্থীদের অগ্রগতি ও মাইলস্টোন
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              শিক্ষার্থীরা কোন কোর্সে কত শতাংশ লেকচার শেষ করেছে এবং কুইজ স্কোর কত তা পর্যবেক্ষণ করুন।
+              ফায়ারস্টোরে রেজিস্টার্ড শিক্ষার্থীদের কোর্স অগ্রগতি ও কুইজ কমপ্লিশন রিয়েল-টাইমে পর্যবেক্ষণ করুন।
             </p>
           </div>
 
@@ -365,7 +396,7 @@ export const AdminPanel: React.FC = () => {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-medium">
-                  <th className="py-3 px-4">শিক্ষার্থীর নাম</th>
+                  <th className="py-3 px-4">শিক্ষার্থীর নাম ও ইমেইল</th>
                   <th className="py-3 px-4">এনরোল্ড কোর্স</th>
                   <th className="py-3 px-4">সম্পন্ন লেকচার</th>
                   <th className="py-3 px-4">কোর্স সমাপ্তি হার</th>
@@ -373,16 +404,38 @@ export const AdminPanel: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {courses.map((course) => {
+                {courses
+                  .slice((studentsPage - 1) * STUDENTS_PER_PAGE, studentsPage * STUDENTS_PER_PAGE)
+                  .map((course) => {
                   const progress = enrolledProgress[course.id];
                   const totalLessons = course.chapters.reduce((sum, ch) => sum + ch.lessons.length, 0);
                   const completed = progress?.completedLessonIds.length || 0;
                   const percent = totalLessons > 0 ? Math.round((completed / totalLessons) * 100) : 0;
+                  const studentName = currentUser ? currentUser.name : 'অ্যাক্টিভ শিক্ষার্থী';
+                  const studentEmail = currentUser ? currentUser.email : 'student@gmail.com';
 
                   return (
                     <tr key={course.id} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3.5 px-4 font-medium text-slate-800">
-                        তানভীর আহমেদ (লগইন করা ইউজার)
+                        <div className="flex items-center gap-2">
+                          {currentUser?.photoURL ? (
+                            <img
+                              src={currentUser.photoURL}
+                              alt={studentName}
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] flex items-center justify-center font-bold">
+                              {studentName.charAt(0) || 'শ'}
+                            </div>
+                          )}
+                          <div>
+                            <span>{studentName}</span>
+                            <span className="block text-[10px] text-slate-400 font-mono font-normal">
+                              {studentEmail}
+                            </span>
+                          </div>
+                        </div>
                       </td>
                       <td className="py-3.5 px-4 text-indigo-700 font-medium">
                         {course.titleBn}
@@ -401,7 +454,7 @@ export const AdminPanel: React.FC = () => {
                       <td className="py-3.5 px-4">
                         <button
                           onClick={() => adminResetProgress(course.id)}
-                          className="inline-flex items-center gap-1 text-[11px] text-slate-600 hover:text-slate-900 border border-slate-200 px-2 py-1 rounded hover:bg-slate-100 transition-colors"
+                          className="inline-flex items-center gap-1 text-[11px] text-slate-600 hover:text-slate-900 border border-slate-200 px-2 py-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
                           title="শিক্ষার্থীর এই কোর্সের অগ্রগতি রিসেট করুন"
                         >
                           <RotateCcw className="w-3 h-3 text-amber-600" />
@@ -414,6 +467,19 @@ export const AdminPanel: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {courses.length > 0 && (
+            <div className="pt-2">
+              <Pagination
+                currentPage={studentsPage}
+                totalPages={Math.ceil(courses.length / STUDENTS_PER_PAGE) || 1}
+                totalItems={courses.length}
+                itemsPerPage={STUDENTS_PER_PAGE}
+                itemNameBn="কোর্স রেকর্ড"
+                onPageChange={setStudentsPage}
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -425,12 +491,14 @@ export const AdminPanel: React.FC = () => {
               ফোরাম ও প্রশ্নোত্তর মডারেশন
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              শিক্ষার্থীদের পোস্ট রিভিউ করুন, গুরুত্বপূর্ণ প্রশ্ন পিন করুন বা স্প্যাম প্রশ্ন মুছে ফেলুন।
+              ফায়ারস্টোর ডেটাবেজের সকল প্রশ্নোত্তর রিভিউ করুন, গুরুত্বপূর্ণ প্রশ্ন পিন করুন বা স্প্যাম প্রশ্ন মুছে ফেলুন।
             </p>
           </div>
 
           <div className="divide-y divide-slate-100">
-            {communityThreads.map((thread) => (
+            {communityThreads
+              .slice((moderationPage - 1) * MODERATION_PER_PAGE, moderationPage * MODERATION_PER_PAGE)
+              .map((thread) => (
               <div key={thread.id} className="py-4 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs">
@@ -452,7 +520,7 @@ export const AdminPanel: React.FC = () => {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => adminTogglePinThread(thread.id)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs border border-slate-200 text-slate-700 hover:bg-slate-50 rounded"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs border border-slate-200 text-slate-700 hover:bg-slate-50 rounded cursor-pointer"
                   >
                     <Pin className="w-3 h-3" />
                     <span>{thread.isPinned ? 'আনপিন' : 'পিন'}</span>
@@ -460,7 +528,7 @@ export const AdminPanel: React.FC = () => {
 
                   <button
                     onClick={() => adminDeleteThread(thread.id)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs border border-rose-200 text-rose-600 hover:bg-rose-50 rounded"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs border border-rose-200 text-rose-600 hover:bg-rose-50 rounded cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                     <span>মুছুন</span>
@@ -469,6 +537,17 @@ export const AdminPanel: React.FC = () => {
               </div>
             ))}
           </div>
+
+          {communityThreads.length > 0 && (
+            <Pagination
+              currentPage={moderationPage}
+              totalPages={Math.ceil(communityThreads.length / MODERATION_PER_PAGE) || 1}
+              totalItems={communityThreads.length}
+              itemsPerPage={MODERATION_PER_PAGE}
+              itemNameBn="আলোচনা / পোস্ট"
+              onPageChange={setModerationPage}
+            />
+          )}
         </div>
       )}
 
@@ -477,7 +556,7 @@ export const AdminPanel: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
           <div className="bg-white w-full max-w-lg rounded-lg border border-slate-200 shadow-xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <h3 className="text-base font-semibold text-slate-900">
-              নতুন কোর্স তৈরি করুন
+              নতুন কোর্স তৈরি করুন (ফায়ারস্টোরে সেভ হবে)
             </h3>
 
             <form onSubmit={handleCreateCourse} className="space-y-3.5">
@@ -533,13 +612,13 @@ export const AdminPanel: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddCourseModalOpen(false)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-lg"
+                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-lg cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                 >
                   কোর্স তৈরি করুন
                 </button>
@@ -619,13 +698,13 @@ export const AdminPanel: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddLessonModalOpen(false)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-lg"
+                  className="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-lg cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                 >
                   লেকচার যুক্ত করুন
                 </button>

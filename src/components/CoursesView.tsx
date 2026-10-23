@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Course, CourseCategory } from '../types';
 import { useLearning } from '../context/LearningContext';
 import { CourseCard } from './CourseCard';
+import { Pagination } from './Pagination';
 import { 
   Search, 
   GraduationCap, 
@@ -20,10 +21,12 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
   onOpenClassroom,
   onOpenSyllabus
 }) => {
-  const { courses, enrolledProgress } = useLearning();
+  const { courses, enrolledProgress, currentUser } = useLearning();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CourseCategory>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const COURSES_PER_PAGE = 6;
 
   const categories: { id: CourseCategory; labelBn: string }[] = [
     { id: 'all', labelBn: 'সকল কোর্স' },
@@ -32,6 +35,11 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
     { id: 'freelancing', labelBn: 'Freelancing' },
     { id: 'graphics', labelBn: 'Video & Motion' },
   ];
+
+  // Reset to first page when search query or category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory]);
 
   // Filtered courses
   const filteredCourses = courses.filter((course) => {
@@ -42,6 +50,12 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
       course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE) || 1;
+  const paginatedCourses = filteredCourses.slice(
+    (currentPage - 1) * COURSES_PER_PAGE,
+    currentPage * COURSES_PER_PAGE
+  );
 
   const enrolledCourseIds = Object.keys(enrolledProgress);
   const enrolledCoursesList = courses.filter(c => enrolledCourseIds.includes(c.id));
@@ -108,8 +122,8 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
         </div>
       </div>
 
-      {/* Enrolled Courses Strip (if user is enrolled in any) */}
-      {enrolledCoursesList.length > 0 && !searchQuery && selectedCategory === 'all' && (
+      {/* Enrolled Courses Strip (Only for authenticated users who are enrolled in courses) */}
+      {currentUser && enrolledCoursesList.length > 0 && !searchQuery && selectedCategory === 'all' && (
         <div className="p-6 rounded-lg bg-indigo-50/50 border border-indigo-100/90 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -173,16 +187,34 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
             কোনো কোর্স খুঁজে পাওয়া যায়নি। ফিল্টার পরিবর্তন করে বা নতুন নামে খুঁজুন।
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-            {filteredCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                onOpenClassroom={onOpenClassroom}
-                onOpenSyllabus={onOpenSyllabus}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+              {paginatedCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  onOpenClassroom={onOpenClassroom}
+                  onOpenSyllabus={onOpenSyllabus}
+                />
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                }}
+                totalItems={filteredCourses.length}
+                itemsPerPage={COURSES_PER_PAGE}
+                itemNameBn="কোর্স"
+                className="mt-6"
               />
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
 

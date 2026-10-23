@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLearning } from '../context/LearningContext';
 import { ThreeHeroCanvas } from './ThreeHeroCanvas';
 import { 
   ArrowRight, 
@@ -31,6 +32,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
   onNavigateToClassroom,
   enrolledCount
 }) => {
+  const { currentUser } = useLearning();
   // Testimonial Slider State
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [isTestimonialHovered, setIsTestimonialHovered] = useState(false);
@@ -153,17 +155,17 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            {enrolledCount > 0 ? (
+            {currentUser && enrolledCount > 0 ? (
               <button
                 onClick={onNavigateToClassroom}
-                className="inline-flex items-center gap-2 px-5 py-3.5 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 text-sm font-medium rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 text-sm font-medium rounded-lg transition-colors cursor-pointer"
               >
                 <span>আমার ক্লাসরুম ({enrolledCount})</span>
               </button>
             ) : (
               <button
                 onClick={onNavigateToCourses}
-                className="inline-flex items-center gap-2 px-5 py-3.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-medium rounded-lg transition-colors shadow-2xs"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-medium rounded-lg transition-colors shadow-2xs cursor-pointer"
               >
                 <Compass className="w-4 h-4 text-slate-500" />
                 <span>সিলেবাস দেখুন</span>

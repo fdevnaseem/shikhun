@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLearning } from '../context/LearningContext';
 import { 
   MessageSquare, 
@@ -8,10 +8,10 @@ import {
   Pin, 
   Send, 
   Filter, 
-  User, 
-  CheckCircle2, 
-  Clock 
+  LogIn 
 } from 'lucide-react';
+import { AuthModal } from './AuthModal';
+import { Pagination } from './Pagination';
 
 export const CommunityBoard: React.FC = () => {
   const { 
@@ -21,13 +21,19 @@ export const CommunityBoard: React.FC = () => {
     replyToCommunityThread, 
     toggleUpvoteThread,
     currentRole,
+    currentUser,
     adminDeleteThread,
     adminTogglePinThread
   } = useLearning();
 
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const THREADS_PER_PAGE = 5;
+
   const [isNewQuestionOpen, setIsNewQuestionOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  
   const [newCourseId, setNewCourseId] = useState(courses[0]?.id || '');
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
@@ -41,6 +47,11 @@ export const CommunityBoard: React.FC = () => {
     setReplyLikes(prev => ({ ...prev, [replyId]: !prev[replyId] }));
   };
 
+  // Reset to page 1 on filter or search
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCourseFilter]);
+
   const filteredThreads = communityThreads
     .filter(t => {
       const matchesCourse = selectedCourseFilter === 'all' || t.courseId === selectedCourseFilter;
@@ -52,22 +63,40 @@ export const CommunityBoard: React.FC = () => {
     .sort((a, b) => {
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
-      return b.upvotes - a.upvotes;
+      return (b.upvotes || 0) - (a.upvotes || 0);
     });
 
-  const handleCreateQuestion = (e: React.FormEvent) => {
+  const totalPages = Math.ceil(filteredThreads.length / THREADS_PER_PAGE) || 1;
+  const paginatedThreads = filteredThreads.slice(
+    (currentPage - 1) * THREADS_PER_PAGE,
+    currentPage * THREADS_PER_PAGE
+  );
+
+  const handleOpenNewQuestion = () => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setIsNewQuestionOpen(true);
+  };
+
+  const handleCreateQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newContent.trim()) return;
-    addCommunityThread(newCourseId, newTitle, newContent);
+    await addCommunityThread(newCourseId || courses[0]?.id || 'general', newTitle, newContent);
     setNewTitle('');
     setNewContent('');
     setIsNewQuestionOpen(false);
   };
 
-  const handleSendReply = (threadId: string) => {
+  const handleSendReply = async (threadId: string) => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return;
+    }
     const text = replyInput[threadId]?.trim();
     if (!text) return;
-    replyToCommunityThread(threadId, text);
+    await replyToCommunityThread(threadId, text);
     setReplyInput(prev => ({ ...prev, [threadId]: '' }));
   };
 
@@ -81,13 +110,13 @@ export const CommunityBoard: React.FC = () => {
             সহপাঠীদের সাথে আলোচনা ও প্রশ্নোত্তর
           </h1>
           <p className="text-xs text-slate-600 mt-1">
-            কোর্স চলাকালীন যেকোনো কোড এরর, ডিজাইন ফিডব্যাক বা সমস্যা নিয়ে সহপাঠী ও মেন্টরদের সাথে সরাসরি আলোচনা করুন।
+            ফায়ারস্টোর ডেটাবেজে লাইভ সিঙ্ক হওয়া প্রশ্নোত্তর ফোরাম। যেকোনো সমস্যা নিয়ে সহপাঠী ও মেন্টরদের সাথে সরাসরি আলোচনা করুন।
           </p>
         </div>
 
         <button
-          onClick={() => setIsNewQuestionOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors shadow-xs shrink-0 self-start sm:self-auto"
+          onClick={handleOpenNewQuestion}
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors shadow-xs shrink-0 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>নতুন প্রশ্ন করুন</span>
@@ -130,8 +159,9 @@ export const CommunityBoard: React.FC = () => {
             এখনো কোনো আলোচনা শুরু হয়নি। আপনার কোনো জিজ্ঞাসা থাকলে প্রথম প্রশ্নটি পোস্ট করুন!
           </div>
         ) : (
-          filteredThreads.map((thread) => {
+          paginatedThreads.map((thread) => {
             const isExpanded = expandedThreadId === thread.id;
+            const hasUserUpvoted = currentUser ? (thread.upvotedUserIds || []).includes(currentUser.id) : false;
 
             return (
               <div 
@@ -151,9 +181,25 @@ export const CommunityBoard: React.FC = () => {
                           পিন করা
                         </span>
                       )}
-                      <span className="font-medium text-slate-800">{thread.authorName}</span>
+
+                      {/* Author Avatar & Name */}
+                      <div className="flex items-center gap-1.5">
+                        {thread.authorPhotoURL ? (
+                          <img
+                            src={thread.authorPhotoURL}
+                            alt={thread.authorName}
+                            className="w-5 h-5 rounded-full object-cover ring-1 ring-slate-200"
+                          />
+                        ) : (
+                          <div className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-semibold flex items-center justify-center">
+                            {thread.authorName.charAt(0) || 'ইউ'}
+                          </div>
+                        )}
+                        <span className="font-semibold text-slate-800">{thread.authorName}</span>
+                      </div>
+
                       {thread.authorRole === 'superadmin' && (
-                        <span className="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.2 rounded font-medium">
+                        <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded font-medium">
                           সুপার অ্যাডমিন
                         </span>
                       )}
@@ -168,13 +214,13 @@ export const CommunityBoard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => adminTogglePinThread(thread.id)}
-                          className="text-[11px] text-amber-700 hover:underline"
+                          className="text-[11px] text-amber-700 hover:underline cursor-pointer"
                         >
                           {thread.isPinned ? 'আনপিন করুন' : 'পিন করুন'}
                         </button>
                         <button
                           onClick={() => adminDeleteThread(thread.id)}
-                          className="text-[11px] text-rose-600 hover:underline"
+                          className="text-[11px] text-rose-600 hover:underline cursor-pointer"
                         >
                           মুছুন
                         </button>
@@ -196,32 +242,38 @@ export const CommunityBoard: React.FC = () => {
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => toggleUpvoteThread(thread.id)}
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                          thread.userUpvoted
+                        onClick={() => {
+                          if (!currentUser) {
+                            setIsAuthModalOpen(true);
+                            return;
+                          }
+                          toggleUpvoteThread(thread.id);
+                        }}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                          hasUserUpvoted
                             ? 'bg-indigo-50 text-indigo-700'
                             : 'text-slate-600 hover:bg-slate-100'
                         }`}
                       >
-                        <ThumbsUp className={`w-3.5 h-3.5 ${thread.userUpvoted ? 'fill-indigo-600' : ''}`} />
+                        <ThumbsUp className={`w-3.5 h-3.5 ${hasUserUpvoted ? 'fill-indigo-600 text-indigo-600' : ''}`} />
                         <span className="tabular-nums">{thread.upvotes}</span>
                         <span className="hidden sm:inline">সহায়ক</span>
                       </button>
 
                       <button
                         onClick={() => setExpandedThreadId(isExpanded ? null : thread.id)}
-                        className="inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 px-2 py-1 rounded-md hover:bg-slate-50 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 px-2 py-1 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
                       >
                         <MessageSquare className="w-3.5 h-3.5" />
-                        <span className="tabular-nums">{thread.replies.length}টি উত্তর</span>
+                        <span className="tabular-nums">{(thread.replies || []).length}টি মন্তব্য</span>
                       </button>
                     </div>
 
                     <button
                       onClick={() => setExpandedThreadId(isExpanded ? null : thread.id)}
-                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium cursor-pointer"
                     >
-                      {isExpanded ? 'উত্তর গুটিয়ে রাখুন' : 'উত্তর দিন বা দেখুন'}
+                      {isExpanded ? 'মন্তব্য গুটিয়ে রাখুন' : 'মন্তব্য দেখুন বা লিখুন'}
                     </button>
                   </div>
 
@@ -232,7 +284,7 @@ export const CommunityBoard: React.FC = () => {
                   <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-5 sm:py-3.5 space-y-3">
                     
                     {/* Compact Comment List */}
-                    {thread.replies.length > 0 ? (
+                    {(thread.replies || []).length > 0 ? (
                       <div className="space-y-2">
                         {thread.replies.map((reply) => {
                           const isLiked = !!replyLikes[reply.id];
@@ -240,13 +292,21 @@ export const CommunityBoard: React.FC = () => {
 
                           return (
                             <div key={reply.id} className="flex items-start gap-2 sm:gap-2.5 group">
-                              {/* Facebook 28px Round Avatar */}
-                              <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium text-[11px] shrink-0 select-none mt-0.5">
-                                {authorInitial}
-                              </div>
+                              {/* Round Avatar */}
+                              {reply.authorPhotoURL ? (
+                                <img
+                                  src={reply.authorPhotoURL}
+                                  alt={reply.authorName}
+                                  className="w-7 h-7 rounded-full object-cover shrink-0 select-none mt-0.5 ring-1 ring-slate-200"
+                                />
+                              ) : (
+                                <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium text-[11px] shrink-0 select-none mt-0.5">
+                                  {authorInitial}
+                                </div>
+                              )}
 
                               <div className="flex-1 min-w-0">
-                                {/* Gray Bubble */}
+                                {/* Gray Facebook-style Bubble */}
                                 <div className="inline-block bg-slate-200/70 hover:bg-slate-200/90 transition-colors rounded-2xl px-3 py-1.5 max-w-[96%] sm:max-w-[85%] text-left">
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="font-semibold text-xs text-slate-900 leading-tight">
@@ -258,7 +318,7 @@ export const CommunityBoard: React.FC = () => {
                                       </span>
                                     )}
                                     {reply.authorRole === 'superadmin' && (
-                                      <span className="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.2 rounded-full font-medium">
+                                      <span className="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.2 rounded-full font-medium">
                                         অ্যাডমিন
                                       </span>
                                     )}
@@ -305,31 +365,53 @@ export const CommunityBoard: React.FC = () => {
                       </p>
                     )}
 
-                    {/* Facebook Pill Comment Input Bar */}
-                    <div className="flex items-center gap-2 pt-1.5 border-t border-slate-200/60">
-                      <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-medium text-[11px] shrink-0 select-none">
-                        {currentRole === 'superadmin' ? 'অ্যা' : 'তা'}
+                    {/* Comment Input Bar or Sign In Prompt */}
+                    {currentUser ? (
+                      <div className="flex items-center gap-2 pt-1.5 border-t border-slate-200/60">
+                        {currentUser.photoURL ? (
+                          <img
+                            src={currentUser.photoURL}
+                            alt={currentUser.name}
+                            className="w-7 h-7 rounded-full object-cover shrink-0 select-none ring-1 ring-slate-200"
+                          />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-medium text-[11px] shrink-0 select-none">
+                            {currentUser.name.charAt(0)}
+                          </div>
+                        )}
+                        
+                        <div className="flex-1 relative flex items-center">
+                          <input
+                            type="text"
+                            value={replyInput[thread.id] || ''}
+                            onChange={(e) => setReplyInput(prev => ({ ...prev, [thread.id]: e.target.value }))}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSendReply(thread.id)}
+                            placeholder="একটি মন্তব্য লিখুন..."
+                            className="w-full pl-3.5 pr-8 py-1.5 text-xs bg-slate-200/60 hover:bg-slate-200/80 focus:bg-white border border-transparent focus:border-slate-300 rounded-full focus:outline-none transition-all placeholder:text-slate-400"
+                          />
+                          <button
+                            onClick={() => handleSendReply(thread.id)}
+                            disabled={!replyInput[thread.id]?.trim()}
+                            className="absolute right-1.5 p-1 text-indigo-600 hover:text-indigo-800 disabled:text-slate-400 disabled:opacity-40 transition-colors cursor-pointer"
+                            title="মন্তব্য পাঠান"
+                            aria-label="মন্তব্য পাঠান"
+                          >
+                            <Send className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex-1 relative flex items-center">
-                        <input
-                          type="text"
-                          value={replyInput[thread.id] || ''}
-                          onChange={(e) => setReplyInput(prev => ({ ...prev, [thread.id]: e.target.value }))}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSendReply(thread.id)}
-                          placeholder="একটি মন্তব্য লিখুন..."
-                          className="w-full pl-3.5 pr-8 py-1.5 text-xs bg-slate-200/60 hover:bg-slate-200/80 focus:bg-white border border-transparent focus:border-slate-300 rounded-full focus:outline-none transition-all placeholder:text-slate-400"
-                        />
+                    ) : (
+                      <div className="flex items-center justify-between pt-2.5 pb-1 border-t border-slate-200/60 text-xs text-slate-500">
+                        <span>আলোচনায় মন্তব্য লিখতে বা উত্তর দিতে লগইন করুন।</span>
                         <button
-                          onClick={() => handleSendReply(thread.id)}
-                          disabled={!replyInput[thread.id]?.trim()}
-                          className="absolute right-1.5 p-1 text-indigo-600 hover:text-indigo-800 disabled:text-slate-400 disabled:opacity-40 transition-colors cursor-pointer"
-                          title="মন্তব্য পাঠান"
-                          aria-label="মন্তব্য পাঠান"
+                          onClick={() => setIsAuthModalOpen(true)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-xs font-medium transition-colors cursor-pointer"
                         >
-                          <Send className="w-3.5 h-3.5" />
+                          <LogIn className="w-3 h-3" />
+                          <span>লগইন করুন</span>
                         </button>
                       </div>
-                    </div>
+                    )}
 
                   </div>
                 )}
@@ -338,6 +420,20 @@ export const CommunityBoard: React.FC = () => {
           })
         )}
       </div>
+
+      {filteredThreads.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredThreads.length}
+          itemsPerPage={THREADS_PER_PAGE}
+          itemNameBn="আলোচনা ও প্রশ্ন"
+          onPageChange={(page) => {
+            setCurrentPage(page);
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+          }}
+        />
+      )}
 
       {/* New Question Modal */}
       {isNewQuestionOpen && (
@@ -395,13 +491,13 @@ export const CommunityBoard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsNewQuestionOpen(false)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs rounded-lg"
+                  className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs rounded-lg cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg cursor-pointer"
                 >
                   প্রশ্ন পোস্ট করুন
                 </button>
@@ -410,6 +506,12 @@ export const CommunityBoard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Auth Modal for unauthenticated user prompt */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
 
     </div>
   );

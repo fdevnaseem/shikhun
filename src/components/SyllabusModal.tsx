@@ -25,16 +25,21 @@ export const SyllabusModal: React.FC<SyllabusModalProps> = ({
   onClose,
   onOpenClassroom
 }) => {
-  const { enrollInCourse, isEnrolled, enrolledProgress } = useLearning();
+  const { enrollInCourse, isEnrolled, enrolledProgress, currentUser } = useLearning();
 
   if (!course) return null;
 
-  const enrolled = isEnrolled(course.id);
+  const enrolled = Boolean(currentUser && isEnrolled(course.id));
   const totalLessons = course.chapters.reduce((sum, ch) => sum + ch.lessons.length, 0);
 
-  const handleEnrollAndGo = () => {
+  const handleEnrollAndGo = async () => {
+    if (!currentUser) {
+      onClose();
+      await enrollInCourse(course.id);
+      return;
+    }
     if (!enrolled) {
-      enrollInCourse(course.id);
+      await enrollInCourse(course.id);
     }
     onOpenClassroom(course.id);
     onClose();
@@ -161,7 +166,7 @@ export const SyllabusModal: React.FC<SyllabusModalProps> = ({
 
           <button
             onClick={handleEnrollAndGo}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors shadow-xs cursor-pointer"
           >
             {enrolled ? (
               <>
@@ -170,7 +175,7 @@ export const SyllabusModal: React.FC<SyllabusModalProps> = ({
               </>
             ) : (
               <>
-                <span>কোর্সে এনরোল করুন</span>
+                <span>{currentUser ? 'কোর্সে এনরোল করুন' : 'লগইন করে শুরু করুন'}</span>
                 <CheckCircle className="w-3.5 h-3.5" />
               </>
             )}

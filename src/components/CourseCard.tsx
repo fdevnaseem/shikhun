@@ -25,9 +25,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   onOpenClassroom,
   onOpenSyllabus
 }) => {
-  const { enrolledProgress, enrollInCourse, isEnrolled } = useLearning();
+  const { enrolledProgress, enrollInCourse, isEnrolled, currentUser } = useLearning();
 
-  const enrolled = isEnrolled(course.id);
+  const enrolled = Boolean(currentUser && isEnrolled(course.id));
   const progress = enrolledProgress[course.id];
 
   // Calculate total lessons and completed lessons
@@ -180,7 +180,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           {enrolled ? (
             <button
               onClick={() => onOpenClassroom(course.id)}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer"
             >
               <span>ক্লাসরুমে যান</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -188,9 +188,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           ) : (
             <button
               onClick={() => enrollInCourse(course.id)}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer"
             >
-              <span>কোর্সে যুক্ত হোন</span>
+              <span>{currentUser ? 'কোর্সে যুক্ত হোন' : 'লগইন করে শুরু করুন'}</span>
               <CheckCircle className="w-3.5 h-3.5" />
             </button>
           )}

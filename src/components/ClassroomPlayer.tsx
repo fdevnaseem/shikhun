@@ -12,10 +12,13 @@ import {
   FileText, 
   MessageSquare,
   Sparkles,
-  Download
+  Download,
+  GraduationCap,
+  LogIn
 } from 'lucide-react';
 import { GamifiedQuizModal } from './GamifiedQuizModal';
 import { CertificateModal } from './CertificateModal';
+import { Pagination } from './Pagination';
 
 interface ClassroomPlayerProps {
   courseId: string;
@@ -29,7 +32,9 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({ courseId, onBa
     markLessonCompleted, 
     communityThreads, 
     addCommunityThread, 
-    replyToCommunityThread 
+    replyToCommunityThread,
+    currentUser,
+    loginWithGoogle
   } = useLearning();
 
   const course = courses.find(c => c.id === courseId);
@@ -48,6 +53,8 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({ courseId, onBa
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
   const [discussionInput, setDiscussionInput] = useState('');
   const [discussionTitle, setDiscussionTitle] = useState('');
+  const [discussionPage, setDiscussionPage] = useState(1);
+  const DISCUSSIONS_PER_PAGE = 3;
 
   if (!course) {
     return (
@@ -55,10 +62,41 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({ courseId, onBa
         <p className="text-slate-600 mb-4">কোর্সটি খুঁজে পাওয়া যায়নি।</p>
         <button
           onClick={onBackToCatalog}
-          className="px-4 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg"
+          className="px-4 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg cursor-pointer"
         >
           কোর্স তালিকায় ফিরুন
         </button>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="max-w-2xl mx-auto py-20 px-4 text-center">
+        <div className="w-16 h-16 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6 text-indigo-600 shadow-xs">
+          <GraduationCap className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-medium text-slate-900 tracking-tight mb-2">
+          ক্লাসরুমে প্রবেশ করতে লগইন করুন
+        </h2>
+        <p className="text-sm text-slate-600 max-w-md mx-auto mb-8 leading-relaxed">
+          আপনার ভিডিও লেকচার দেখার অগ্রগতি, কুইজের অর্জিত XP এবং কোর্স সমাপ্তির ভেরিফাইড সার্টিফিকেট সুরক্ষিত রাখতে গুগল অ্যাকাউন্ট দিয়ে সাইন ইন করুন।
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            onClick={() => loginWithGoogle()}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors shadow-xs cursor-pointer"
+          >
+            <LogIn className="w-4 h-4" />
+            <span>গুগল দিয়ে লগইন করুন</span>
+          </button>
+          <button
+            onClick={onBackToCatalog}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-medium rounded-lg transition-colors cursor-pointer"
+          >
+            <span>সকল কোর্স ব্রাউজ করুন</span>
+          </button>
+        </div>
       </div>
     );
   }
