@@ -198,8 +198,21 @@ export const ThreeHeroCanvas: React.FC = () => {
     orbitRing.rotation.y = Math.PI / 10;
     mascotGroup.add(orbitRing);
 
-    // Initial position parked at Hero (Right side)
-    mascotGroup.position.set(2.4, 0.15, 0);
+    // 5. Smooth 3D Catmull-Rom Spline Curve with Natural Arc Swoops
+    const splineWaypoints = [
+      new THREE.Vector3(2.45, 0.15, 0.0),   // Point 0: Hero (Right Flank)
+      new THREE.Vector3(0.15, 0.45, 0.35),  // Point 1: Mid-swoop natural crest
+      new THREE.Vector3(-2.45, -0.10, 0.0), // Point 2: About (Left Flank)
+      new THREE.Vector3(-0.10, 0.40, 0.35), // Point 3: Mid-swoop natural crest
+      new THREE.Vector3(2.45, 0.15, 0.0),   // Point 4: Methodology (Right Flank)
+      new THREE.Vector3(1.55, 1.35, -0.6),  // Point 5: Tracks (Upper Hover)
+      new THREE.Vector3(0.0, 0.20, 0.25)    // Point 6: CTA (Center Stage Landing)
+    ];
+
+    const splineCurve = new THREE.CatmullRomCurve3(splineWaypoints, false, 'catmullrom', 0.5);
+
+    // Initial position at spline start
+    mascotGroup.position.copy(splineWaypoints[0]);
 
     // Mouse Tracking
     let mouseX = 0;
@@ -226,56 +239,65 @@ export const ThreeHeroCanvas: React.FC = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    // Steady Orbit Angle Accumulator (Completely insulated from scroll speed!)
+    // Steady Orbit Angle Accumulator (Calm & steady, zero scroll jumps)
     let orbitPhase = 0;
 
-    // DOM Section Anchors for Exact Spatial Positioning
-    const getTargetCoordinatesFromDOM = () => {
-      const viewportCenterY = window.innerHeight * 0.45;
+    // Direct Section Scroll Offset Progress Calculation (ZERO lag!)
+    const calculateSplineTFromSections = (): number => {
+      const hero = document.getElementById('section-hero');
+      const about = document.getElementById('section-about');
+      const methodology = document.getElementById('section-methodology');
+      const tracks = document.getElementById('section-tracks');
+      const cta = document.getElementById('section-cta');
 
-      // Section target definitions
-      const sections = [
-        { id: 'section-hero', x: 2.45, y: 0.15, z: 0, scale: 1.05 },
-        { id: 'section-about', x: -2.45, y: -0.1, z: 0, scale: 1.0 },
-        { id: 'section-methodology', x: 2.45, y: 0.15, z: 0, scale: 1.05 },
-        { id: 'section-tracks', x: 1.9, y: 1.6, z: -0.8, scale: 0.85 },
-        { id: 'section-cta', x: 0, y: 0.2, z: 0, scale: 1.15 }
-      ];
-
-      // Measure distance of each section's top from viewport center
-      const measurements = sections.map((sec) => {
-        const el = document.getElementById(sec.id);
-        if (!el) return { ...sec, dist: 99999, top: 99999 };
-        const rect = el.getBoundingClientRect();
-        const centerY = rect.top + rect.height * 0.35;
-        return {
-          ...sec,
-          dist: Math.abs(centerY - viewportCenterY),
-          top: centerY
-        };
-      });
-
-      // Sort by closest to viewport center
-      measurements.sort((a, b) => a.dist - b.dist);
-      const closest = measurements[0];
-      const secondClosest = measurements[1];
-
-      // Blend smoothly between the two closest sections
-      if (!secondClosest || secondClosest.dist > 1500) {
-        return { x: closest.x, y: closest.y, z: closest.z, scale: closest.scale };
+      if (!hero || !about) {
+        // Fallback to basic scroll ratio
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        return Math.min(1, Math.max(0, window.scrollY / maxScroll));
       }
 
-      const totalDist = closest.dist + secondClosest.dist;
-      const weightClosest = 1 - (closest.dist / totalDist);
-      const weightSecond = 1 - weightClosest;
+      // Measured scroll offset anchor points (where each section enters active reading zone)
+      const scrollY = window.scrollY;
+      const heroY = 0;
+      const aboutY = Math.max(100, about.offsetTop - window.innerHeight * 0.35);
+      const methodologyY = methodology ? Math.max(aboutY + 200, methodology.offsetTop - window.innerHeight * 0.35) : aboutY + 800;
+      const tracksY = tracks ? Math.max(methodologyY + 200, tracks.offsetTop - window.innerHeight * 0.35) : methodologyY + 800;
+      const ctaY = cta ? Math.max(tracksY + 200, cta.offsetTop - window.innerHeight * 0.45) : tracksY + 800;
 
-      return {
-        x: closest.x * weightClosest + secondClosest.x * weightSecond,
-        y: closest.y * weightClosest + secondClosest.y * weightSecond,
-        z: closest.z * weightClosest + secondClosest.z * weightSecond,
-        scale: closest.scale * weightClosest + secondClosest.scale * weightSecond
-      };
+      // Section intervals mapped across the spline curve points:
+      // Hero (scrollY: 0 -> aboutY) => t: 0.0 -> 0.333 (Point 0 to Point 2: Right to Left)
+      // About (scrollY: aboutY -> methodologyY) => t: 0.333 -> 0.666 (Point 2 to Point 4: Left to Right)
+      // Methodology (scrollY: methodologyY -> tracksY) => t: 0.666 -> 0.833 (Point 4 to Point 5: Right to Tracks)
+      // Tracks -> CTA (scrollY: tracksY -> ctaY) => t: 0.833 -> 1.0 (Point 5 to Point 6: Tracks to Center)
+
+      if (scrollY <= heroY) {
+        return 0;
+      } else if (scrollY < aboutY) {
+        // Linear progression through Hero fold into About
+        const u = (scrollY - heroY) / (aboutY - heroY);
+        // Smoothstep interpolation for natural easing
+        const smoothU = u * u * (3 - 2 * u);
+        return smoothU * 0.333;
+      } else if (scrollY < methodologyY) {
+        // Progression through About into Methodology
+        const u = (scrollY - aboutY) / (methodologyY - aboutY);
+        const smoothU = u * u * (3 - 2 * u);
+        return 0.333 + smoothU * 0.333;
+      } else if (scrollY < tracksY) {
+        // Progression through Methodology into Tracks
+        const u = (scrollY - methodologyY) / (tracksY - methodologyY);
+        const smoothU = u * u * (3 - 2 * u);
+        return 0.666 + smoothU * 0.167;
+      } else {
+        // Final approach into CTA
+        const u = Math.min(1, Math.max(0, (scrollY - tracksY) / Math.max(100, ctaY - tracksY)));
+        const smoothU = u * u * (3 - 2 * u);
+        return 0.833 + smoothU * 0.167;
+      }
     };
+
+    // Reusable math vector for spline evaluation (zero GC allocation)
+    const splinePos = new THREE.Vector3();
 
     // Animation Loop
     let animationFrameId: number;
@@ -285,35 +307,43 @@ export const ThreeHeroCanvas: React.FC = () => {
       const delta = Math.min(clock.getDelta(), 0.1);
       const elapsed = clock.getElapsedTime();
 
-      // 1. Smooth mouse interpolation
+      // Smooth mouse interpolation
       mouseX = THREE.MathUtils.damp(mouseX, targetMouseX, 4, delta);
       mouseY = THREE.MathUtils.damp(mouseY, targetMouseY, 4, delta);
 
-      // 2. Exact DOM Section Coordinates
-      const targetPos = getTargetCoordinatesFromDOM();
+      // 1. Evaluate Direct Spline Parameter t in [0, 1] from Section Scroll
+      const t = calculateSplineTFromSections();
+      splineCurve.getPoint(t, splinePos);
 
-      // Breathing idle bob
-      const breathingBob = Math.sin(elapsed * 1.8) * 0.06;
-      const finalX = targetPos.x + mouseX * 0.4;
-      const finalY = targetPos.y + breathingBob - mouseY * 0.4;
-      const finalZ = targetPos.z;
+      // 2. Idle breathing bob + subtle mouse parallax
+      const breathingBob = Math.sin(elapsed * 1.8) * 0.05;
+      const finalX = splinePos.x + mouseX * 0.4;
+      const finalY = splinePos.y + breathingBob - mouseY * 0.4;
+      const finalZ = splinePos.z;
 
-      // Smooth position dampening
+      // Dynamic scale: expands slightly at center stage, compacts during transit
+      const targetScale = t > 0.85 ? 1.15 : 1.0;
+
+      // 3. Silky Smooth Exponential Dampening
       mascotGroup.position.x = THREE.MathUtils.damp(mascotGroup.position.x, finalX, 3.2, delta);
       mascotGroup.position.y = THREE.MathUtils.damp(mascotGroup.position.y, finalY, 3.2, delta);
       mascotGroup.position.z = THREE.MathUtils.damp(mascotGroup.position.z, finalZ, 3.2, delta);
 
       const currentScale = mascotGroup.scale.x;
-      const newScale = THREE.MathUtils.damp(currentScale, targetPos.scale, 3.2, delta);
+      const newScale = THREE.MathUtils.damp(currentScale, targetScale, 3.2, delta);
       mascotGroup.scale.set(newScale, newScale, newScale);
 
-      // Mascot head rotation towards cursor
+      // 4. Mascot Natural Banking & Tilt
+      // Bank gently along X velocity / curve direction + look towards cursor
       const targetRotY = mouseX * 0.5 + Math.sin(elapsed * 0.7) * 0.1;
       const targetRotX = -mouseY * 0.35 + Math.cos(elapsed * 0.5) * 0.06;
+      const targetRotZ = -THREE.MathUtils.clamp((finalX - mascotGroup.position.x) * 0.6, -0.2, 0.2); // banking tilt
+
       mascotGroup.rotation.y = THREE.MathUtils.damp(mascotGroup.rotation.y, targetRotY, 4, delta);
       mascotGroup.rotation.x = THREE.MathUtils.damp(mascotGroup.rotation.x, targetRotX, 4, delta);
+      mascotGroup.rotation.z = THREE.MathUtils.damp(mascotGroup.rotation.z, targetRotZ, 3.5, delta);
 
-      // 3. Steady, Calm Orbiting Satellites (Delta-based, ZERO scroll jump spikes)
+      // 5. Steady, Calm Orbiting Satellites (Delta-based, ZERO velocity spikes)
       orbitPhase += 0.75 * delta;
 
       // React Code Cube

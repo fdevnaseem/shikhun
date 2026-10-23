@@ -26,21 +26,21 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
   enrolledCount
 }) => {
   return (
-    <div className="relative space-y-28 pb-24 pt-6 sm:pt-10">
+    <div className="relative space-y-56 pb-36 pt-10 sm:pt-16">
       
-      {/* Continuous Full-Viewport 3D Mascot Canvas (Only on large screens >= 1024px) */}
+      {/* Continuous Full-Viewport 3D Mascot Canvas (Large screens >= 1024px with silky sinusoidal path) */}
       <ThreeHeroCanvas />
 
-      {/* 1. HERO SECTION (Left Weighted: Mascot is on Right) */}
-      <section id="section-hero" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
-        <div className="max-w-2xl lg:pr-8 space-y-6 text-left relative z-20">
+      {/* 1. HERO SECTION (Left Weighted: Mascot sways on Right) */}
+      <section id="section-hero" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
+        <div className="max-w-2xl lg:pr-10 space-y-7 text-left relative z-20">
           
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-50/90 border border-indigo-200/60 rounded-md text-xs text-indigo-700 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
             <span>বাঙালি শিক্ষার্থীদের আন্তর্জাতিক ক্যারিয়ার গড়ার অনন্য প্ল্যাটফর্ম</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-medium text-slate-900 tracking-tight leading-[1.25] text-balance">
+          <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-medium text-slate-900 tracking-tight leading-[1.25] text-balance">
             মাতৃভাষায় স্কিল শিখুন, বিশ্বমঞ্চে গড়ে তুলুন আপনার ক্যারিয়ার
           </h1>
 
@@ -77,17 +77,17 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
           </div>
 
           {/* Quantitative Metrics Strip */}
-          <div className="pt-6 border-t border-slate-200/80 grid grid-cols-3 gap-4 text-xs text-slate-600">
+          <div className="pt-8 border-t border-slate-200/80 grid grid-cols-3 gap-6 text-xs text-slate-600">
             <div>
-              <span className="font-semibold text-slate-900 font-mono text-lg block tabular-nums">৫,২৯০+</span>
+              <span className="font-semibold text-slate-900 font-mono text-xl block tabular-nums">৫,২৯০+</span>
               <span className="text-[11px] text-slate-500">সক্রিয় শিক্ষার্থী</span>
             </div>
             <div>
-              <span className="font-semibold text-slate-900 font-mono text-lg block tabular-nums">৯৮.৪%</span>
+              <span className="font-semibold text-slate-900 font-mono text-xl block tabular-nums">৯৮.৪%</span>
               <span className="text-[11px] text-slate-500">কোর্স সন্তুষ্টি হার</span>
             </div>
             <div>
-              <span className="font-semibold text-slate-900 font-mono text-lg block tabular-nums">২৪/৭</span>
+              <span className="font-semibold text-slate-900 font-mono text-xl block tabular-nums">২৪/৭</span>
               <span className="text-[11px] text-slate-500">মেন্টর প্রশ্নোত্তর সাপোর্ট</span>
             </div>
           </div>
@@ -95,11 +95,11 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 2. WHAT IS SHIKHUN (Right Weighted: Mascot is on Left) */}
-      <section id="section-about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
-        <div className="max-w-3xl ml-auto lg:pl-10 relative z-20 space-y-6">
+      {/* 2. WHAT IS SHIKHUN (Right Weighted: Mascot sways on Left) */}
+      <section id="section-about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
+        <div className="max-w-3xl ml-auto lg:pl-12 relative z-20 space-y-7">
           
-          <div className="space-y-2 text-left">
+          <div className="space-y-2.5 text-left">
             <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">আমাদের স্বাতন্ত্র্য</span>
             <h2 className="text-2xl sm:text-3xl font-medium text-slate-900">
               কী এই ‘শিখুন’ এবং কেন আপনার জন্য উপযুক্ত?
@@ -109,10 +109,10 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             
-            <div className="p-5 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs space-y-2.5">
-              <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="p-6 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                 <Code2 className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-semibold text-slate-900">
@@ -123,8 +123,8 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </p>
             </div>
 
-            <div className="p-5 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs space-y-2.5">
-              <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="p-6 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
                 <Trophy className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-semibold text-slate-900">
@@ -135,8 +135,8 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </p>
             </div>
 
-            <div className="p-5 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs space-y-2.5">
-              <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+            <div className="p-6 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                 <Briefcase className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-semibold text-slate-900">
@@ -147,8 +147,8 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </p>
             </div>
 
-            <div className="p-5 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs space-y-2.5">
-              <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+            <div className="p-6 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
                 <FileText className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-semibold text-slate-900">
@@ -164,11 +164,11 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 3. 3-STEP LEARNING METHODOLOGY (Left Weighted: Mascot is on Right) */}
-      <section id="section-methodology" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
-        <div className="max-w-2xl lg:pr-8 relative z-20 space-y-6">
+      {/* 3. 3-STEP LEARNING METHODOLOGY (Left Weighted: Mascot sways on Right) */}
+      <section id="section-methodology" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
+        <div className="max-w-2xl lg:pr-10 relative z-20 space-y-7">
           
-          <div className="space-y-2 text-left">
+          <div className="space-y-2.5 text-left">
             <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">পদ্ধতিগত অগ্রগতি</span>
             <h2 className="text-2xl sm:text-3xl font-medium text-slate-900">
               কীভাবে পরিচালিত হয় ‘শিখুন’ ৩-ধাপের লার্নিং জার্নি?
@@ -178,9 +178,9 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
             </p>
           </div>
 
-          <div className="space-y-3.5">
+          <div className="space-y-4">
             
-            <div className="bg-white/95 border border-slate-200/90 rounded-lg p-5 space-y-1.5 shadow-2xs">
+            <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-2 shadow-2xs">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-semibold text-indigo-600">ধাপ ০১</span>
                 <span className="text-[11px] text-slate-400 font-mono">STEP 01</span>
@@ -191,7 +191,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </p>
             </div>
 
-            <div className="bg-white/95 border border-slate-200/90 rounded-lg p-5 space-y-1.5 shadow-2xs">
+            <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-2 shadow-2xs">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-semibold text-amber-600">ধাপ ০২</span>
                 <span className="text-[11px] text-slate-400 font-mono">STEP 02</span>
@@ -202,7 +202,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </p>
             </div>
 
-            <div className="bg-white/95 border border-slate-200/90 rounded-lg p-5 space-y-1.5 shadow-2xs">
+            <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-2 shadow-2xs">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-semibold text-emerald-600">ধাপ ০৩</span>
                 <span className="text-[11px] text-slate-400 font-mono">STEP 03</span>
@@ -218,11 +218,11 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 4. CURATED CAREER TRACKS (Full Width Corridor: Mascot is Upper Right) */}
-      <section id="section-tracks" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-24">
-        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-lg p-8 sm:p-12 space-y-8 shadow-sm">
+      {/* 4. CURATED CAREER TRACKS (Full Width Corridor) */}
+      <section id="section-tracks" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-32">
+        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-lg p-8 sm:p-14 space-y-10 shadow-sm">
           
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-7">
             <div>
               <span className="text-xs font-mono text-indigo-400 uppercase tracking-widest">CURATED TRACKS</span>
               <h2 className="text-2xl sm:text-3xl font-medium mt-1">
@@ -244,7 +244,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all space-y-3">
+            <div className="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] text-indigo-300 font-mono">TRACK 01</span>
                 <Code2 className="w-4 h-4 text-indigo-400" />
@@ -258,7 +258,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </div>
             </div>
 
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all space-y-3">
+            <div className="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] text-rose-300 font-mono">TRACK 02</span>
                 <Palette className="w-4 h-4 text-rose-400" />
@@ -272,7 +272,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </div>
             </div>
 
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all space-y-3">
+            <div className="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-all space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] text-emerald-300 font-mono">TRACK 03</span>
                 <Briefcase className="w-4 h-4 text-emerald-400" />
@@ -310,7 +310,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-5 space-y-3 shadow-2xs">
+          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-3 shadow-2xs">
             <div className="flex items-center gap-1 text-amber-500">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -325,7 +325,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
             </div>
           </div>
 
-          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-5 space-y-3 shadow-2xs">
+          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-3 shadow-2xs">
             <div className="flex items-center gap-1 text-amber-500">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -340,7 +340,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
             </div>
           </div>
 
-          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-5 space-y-3 shadow-2xs">
+          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-3 shadow-2xs">
             <div className="flex items-center gap-1 text-amber-500">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -358,8 +358,8 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
       </section>
 
       {/* 6. FINAL ACTION BANNER (Mascot Centers Down) */}
-      <section id="section-cta" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-24">
-        <div className="bg-indigo-600 text-white rounded-lg p-8 sm:p-12 text-center space-y-6 shadow-sm">
+      <section id="section-cta" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-32">
+        <div className="bg-indigo-600 text-white rounded-lg p-8 sm:p-14 text-center space-y-6 shadow-sm">
           <div className="max-w-2xl mx-auto space-y-2">
             <h2 className="text-2xl sm:text-3xl font-medium tracking-tight">
               আজই শুরু করুন আপনার নতুন স্কিল শেখার যাত্রা

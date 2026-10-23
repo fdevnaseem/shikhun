@@ -1,6 +1,6 @@
 {
-  "summary":  "Implementation plan to refine wallpaper pattern: ultra-subtle whisper opacity (15-16%), expanded 340px tile with generous breathing room, and curated well-spaced cute pastel doodles.",
-  "updatedAt":  "2026-10-23T16:25:14.935349081Z",
+  "summary":  "Implementation plan to replace delayed scroll calculation with a 3D Catmull-Rom spline curve with natural arc swoops, keyed directly to section scroll offsets for immediate, progressive gliding.",
+  "updatedAt":  "2026-10-23T16:48:23.831663446Z",
   "requestFeedback":  true,
   "userFacing":  true
 }
