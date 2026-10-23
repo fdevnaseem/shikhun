@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ThreeHeroCanvas } from './ThreeHeroCanvas';
 import { 
   ArrowRight, 
@@ -11,7 +11,13 @@ import {
   FileText, 
   ShieldCheck, 
   Star,
-  Compass
+  Compass,
+  ChevronLeft,
+  ChevronRight,
+  Quote,
+  ZoomIn,
+  ZoomOut,
+  CheckCircle2
 } from 'lucide-react';
 
 interface MarketingHomeProps {
@@ -25,27 +31,116 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
   onNavigateToClassroom,
   enrolledCount
 }) => {
+  // Testimonial Slider State
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+  const [isTestimonialHovered, setIsTestimonialHovered] = useState(false);
+
+  const testimonials = [
+    {
+      id: 1,
+      quote: "বাংলায় এত গোছানো React কোর্স আগে পাইনি। প্রতিটা লেকচারের পর কুইজে XP পাওয়ার অভ্যাসটা প্রতিদিন পড়তে বসতে সাহায্য করেছে। কোর্স শেষ করে ঢাকাতেই জুনিয়র ডেভেলপার হিসেবে জয়েন করেছি।",
+      name: "তানভীর আহমেদ",
+      role: "জুনিয়র ফুলস্ট্যাক ডেভেলপার",
+      company: "টেকনেক্সট বিডি",
+      location: "ঢাকা",
+      track: "Full-Stack Web Development",
+      outcome: "ফুলটাইম ডেভেলপার নিয়োগ",
+      rating: 5,
+      initials: "তা",
+      bgGradient: "from-indigo-500 to-blue-600"
+    },
+    {
+      id: 2,
+      quote: "Upwork-এ শুরুতে বিড করলেও কোনো রেসপন্স পাচ্ছিলাম না। এখানে কভার লেটার, ক্লায়েন্ট সাইকোলজি আর গিগ অপটিমাইজেশন লেকচারগুলো দেখার পর প্রথম সপ্তাহেই দুটি ছোট প্রজেক্টের কাজ পেয়েছি!",
+      name: "সাদিয়া ইসলাম",
+      role: "ফ্রিল্যান্স ডিজাইনার",
+      company: "Upwork ও Fiverr",
+      location: "চট্টগ্রাম",
+      track: "Freelancing: Upwork ও Fiverr",
+      outcome: "$১,২০০+ ফ্রিল্যান্সিং আয়",
+      rating: 5,
+      initials: "সা",
+      bgGradient: "from-emerald-500 to-teal-600"
+    },
+    {
+      id: 3,
+      quote: "UI/UX ডিজাইনে Figma Auto Layout আর Component লাইব্রেরি নিয়ে আগে অনেক ভজঘট লাগত। কোর্সের প্রজেক্টগুলো হাতে-কলমে করে এখন প্রফেশনাল ডিজাইন সিস্টেম আর্কিটেকচার বানাতে পারি।",
+      name: "রাকিবুল হাসান",
+      role: "প্রোডাক্ট ডিজাইনার",
+      company: "ইনোভেশন ল্যাবস",
+      location: "রাজশাহী",
+      track: "UI/UX Design ও Figma",
+      outcome: "রিমোট UI ক্লায়েন্ট চুক্তি",
+      rating: 5,
+      initials: "রা",
+      bgGradient: "from-rose-500 to-pink-600"
+    },
+    {
+      id: 4,
+      quote: "ফোরামে কোডের এরর নিয়ে পোস্ট করলে মেন্টর বা সহপাঠীরা সাথে সাথে কারণ আর সমাধান বুঝিয়ে দেয়। একা পড়ার যে দ্বিধাদ্বন্দ্ব ছিল সেটা একদম কেটে গেছে।",
+      name: "শাকিল আহমেদ",
+      role: "সিএসই আন্ডারগ্র্যাড শিক্ষার্থী",
+      company: "শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়",
+      location: "সিলেট",
+      track: "Full-Stack Web Development",
+      outcome: "একাডেমিক প্রজেক্ট চ্যাম্পিয়ন",
+      rating: 5,
+      initials: "শা",
+      bgGradient: "from-amber-500 to-orange-600"
+    },
+    {
+      id: 5,
+      quote: "কমার্স ব্যাকগ্রাউন্ড থেকে আসায় কোডিং নিয়ে ভয় ছিল। শিখুন-এর সহজ বাংলা লেকচার আর সাথে দেওয়া PDF চিটশিটগুলো রিভিশন দেওয়ার সময় অনেক কাজে দেয়। এখন ফ্রন্টএন্ড কোডিংয়ে বেশ আত্মবিশ্বাসী।",
+      name: "ফারহানা বিনতে কামাল",
+      role: "অ্যাসোসিয়েট ফ্রন্টএন্ড ইঞ্জিনিয়ার",
+      company: "ক্রিয়েটিভ স্টুডিও",
+      location: "খুলনা",
+      track: "Full-Stack Web Development",
+      outcome: "নন-টেক থেকে ক্যারিয়ার পরিবর্তন",
+      rating: 5,
+      initials: "ফা",
+      bgGradient: "from-purple-500 to-indigo-600"
+    }
+  ];
+
+  // Auto-slide testimonials every 5.5 seconds unless user hovers
+  useEffect(() => {
+    if (isTestimonialHovered) return;
+    const interval = setInterval(() => {
+      setCurrentTestimonialIndex(prev => (prev + 1) % testimonials.length);
+    }, 5500);
+    return () => clearInterval(interval);
+  }, [isTestimonialHovered, testimonials.length]);
+
+  const handlePrevTestimonial = () => {
+    setCurrentTestimonialIndex(prev => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+
+  const handleNextTestimonial = () => {
+    setCurrentTestimonialIndex(prev => (prev + 1) % testimonials.length);
+  };
+
   return (
     <div className="relative space-y-56 pb-36 pt-10 sm:pt-16">
       
-      {/* Continuous Full-Viewport 3D Mascot Canvas (Large screens >= 1024px with silky sinusoidal path) */}
+      {/* Continuous Full-Viewport 3D Mascot Canvas (Strictly in alternating empty side margins at z-10) */}
       <ThreeHeroCanvas />
 
-      {/* 1. HERO SECTION (Left Weighted: Mascot sways on Right) */}
+      {/* 1. HERO SECTION (Left Weighted: Mascot sways in empty Right corridor) */}
       <section id="section-hero" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
         <div className="max-w-2xl lg:pr-10 space-y-7 text-left relative z-20">
           
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-50/90 border border-indigo-200/60 rounded-md text-xs text-indigo-700 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-            <span>বাঙালি শিক্ষার্থীদের আন্তর্জাতিক ক্যারিয়ার গড়ার অনন্য প্ল্যাটফর্ম</span>
+            <span>বাস্তব প্রজেক্টে হ্যান্ডস-অন স্কিল শেখার প্ল্যাটফর্ম</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-[3.5rem] font-medium text-slate-900 tracking-tight leading-[1.25] text-balance">
-            মাতৃভাষায় স্কিল শিখুন, বিশ্বমঞ্চে গড়ে তুলুন আপনার ক্যারিয়ার
+            প্রজেক্ট বানিয়ে শিখুন Full-Stack ডেভেলপমেন্ট ও UI/UX ডিজাইন
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-            ‘শিখুন’ শুধু ভিডিও দেখার জায়গা নয়—এখানে রয়েছে বাস্তব প্রজেক্ট-ভিত্তিক কোডিং, ফিগমা ডিজাইন সিস্টেম, আপওয়ার্ক ফ্রিল্যান্সিং গাইড এবং প্রতিদিনের গেইমিফাইড কুইজ চ্যালেঞ্জ।
+            বোরিং থিওরি নয়—সরাসরি প্রজেক্ট কোডিং, Figma ডিজাইন সিস্টেম, Upwork ফ্রিল্যান্সিং গাইড এবং প্রতিদিনের প্র্যাকটিস কুইজ দিয়ে নিজের পোর্টফোলিও তৈরি করুন।
           </p>
 
           {/* Action Buttons */}
@@ -54,7 +149,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               onClick={onNavigateToCourses}
               className="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-lg transition-all shadow-sm hover:shadow"
             >
-              <span>সকল কোর্স এক্সপ্লোর করুন</span>
+              <span>সকল কোর্স দেখুন</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -88,7 +183,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
             </div>
             <div>
               <span className="font-semibold text-slate-900 font-mono text-xl block tabular-nums">২৪/৭</span>
-              <span className="text-[11px] text-slate-500">মেন্টর প্রশ্নোত্তর সাপোর্ট</span>
+              <span className="text-[11px] text-slate-500">কমিউনিটি ও মেন্টর সাপোর্ট</span>
             </div>
           </div>
 
@@ -100,12 +195,12 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         <div className="max-w-3xl ml-auto lg:pl-12 relative z-20 space-y-7">
           
           <div className="space-y-2.5 text-left">
-            <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">আমাদের স্বাতন্ত্র্য</span>
+            <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">আমাদের বিশেষত্ব</span>
             <h2 className="text-2xl sm:text-3xl font-medium text-slate-900">
               কী এই ‘শিখুন’ এবং কেন আপনার জন্য উপযুক্ত?
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-              অনলাইনে হাজারো ইংরেজি টিউটোরিয়াল আছে, কিন্তু কনসেপ্টের গভীরে গিয়ে বাস্তব প্রজেক্ট তৈরি ও মেন্টর গাইডেন্সে সফল হতে নিজের মাতৃভাষাই সেরা মাধ্যম।
+              অনলাইনে হাজারো টিউটোরিয়াল দেখে কনফিউজড না হয়ে, কনসেপ্ট ক্লিয়ার করে সরাসরি প্রজেক্ট তৈরি এবং মেন্টরদের সাহায্যে স্কিল ডেভেলপ করুন।
             </p>
           </div>
 
@@ -119,7 +214,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
                 বাস্তব প্রজেক্ট-ভিত্তিক শিক্ষাক্রম
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                থিওরির পর থিওরি নয়; প্রথম অধ্যায় থেকেই শুরু হয় আধুনিক রিয়্যাক্ট ওয়েব অ্যাপ ও ফিগমা ডিজাইন সিস্টেমের বাস্তব কোডিং।
+                থিওরির বোঝা নয়; প্রথম অধ্যায় থেকেই শুরু হয় আধুনিক React ওয়েব অ্যাপ ও Figma ডিজাইন সিস্টেমের বাস্তব কোডিং।
               </p>
             </div>
 
@@ -128,10 +223,10 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
                 <Trophy className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-semibold text-slate-900">
-                গেইমিফাইড দৈনিক কুইজ ও XP
+                দৈনিক প্র্যাকটিস কুইজ ও XP
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                পড়ালেখা যেন আনন্দদায়ক হয়! প্রতিটি লেকচারের কুইজ দিয়ে অর্জন করুন এক্সপি এবং বজায় রাখুন দৈনিক স্ট্রিক ফ্লেম।
+                পড়ালেখা যেন আনন্দের হয়! প্রতিটি লেসনের সাথে কুইজ সমাধান করে কনসেপ্ট ঝালিয়ে নিন এবং স্ট্রিক ফ্লেম ধরে রাখুন।
               </p>
             </div>
 
@@ -140,10 +235,10 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
                 <Briefcase className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-semibold text-slate-900">
-                আন্তর্জাতিক ফ্রিল্যান্সিং গাইড
+                Upwork ও Freelancing গাইড
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                কেবল কাজ শেখা নয়—আপওয়ার্ক ও ফাইভার মার্কেটপ্লেসে ক্লায়েন্ট পাওয়া ও উইনিং কভার লেটার লেখার প্র্যাক্টিক্যাল টেকনিক।
+                মার্কেটপ্লেসে ক্লায়েন্ট খোঁজা, প্রোফাইল অপটিমাইজেশন আর উইনিং প্রপোজাল লেখার প্র্যাক্টিক্যাল কৌশল।
               </p>
             </div>
 
@@ -152,10 +247,10 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
                 <FileText className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-semibold text-slate-900">
-                মুদ্রণযোগ্য বাংলা হ্যান্ডআউট
+                ডাউনলোডযোগ্য PDF চিটশিট
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                প্রতিটি লেকচারের সাথে থাকছে পূর্ণাঙ্গ পিডিএফ হ্যান্ডআউট ও রেফারেন্স চিটশিট যা ভবিষ্যতে সবসময় কাছে রাখা যাবে।
+                প্রতিটি লেকচারের সাথে থাকছে পূর্ণাঙ্গ PDF গাইড ও রেফারেন্স চিটশিট যা ভবিষ্যতে রিভিশন দেওয়ার সময় কাজে লাগবে।
               </p>
             </div>
 
@@ -169,12 +264,12 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         <div className="max-w-2xl lg:pr-10 relative z-20 space-y-7">
           
           <div className="space-y-2.5 text-left">
-            <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">পদ্ধতিগত অগ্রগতি</span>
+            <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">লার্নিং মেথড</span>
             <h2 className="text-2xl sm:text-3xl font-medium text-slate-900">
               কীভাবে পরিচালিত হয় ‘শিখুন’ ৩-ধাপের লার্নিং জার্নি?
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-normal">
-              ধাপে ধাপে শেখা এবং প্রতিটি মাইলস্টোন সফলভাবে সম্পন্নের মাধ্যমে তৈরি হয় আসল আত্মবিশ্বাস।
+              ধাপে ধাপে শেখা এবং প্রতিটি মাইলস্টোন কমপ্লিটের মাধ্যমে তৈরি হয় আসল আত্মবিশ্বাস।
             </p>
           </div>
 
@@ -187,7 +282,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </div>
               <h3 className="text-base font-medium text-slate-900">ভিডিও লেকচার ও রিভিশন শিট</h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                হাই-ডেফিনিশন ভিডিও ক্লাস দেখার পাশাপাশি প্রয়োজনীয় রেফারেন্স কোড ও কনসেপ্ট চিটশিট ডাউনলোড করে নিন।
+                সহজ বাংলায় ভিডিও ক্লাস দেখার পাশাপাশি প্রয়োজনীয় রেফারেন্স কোড ও কনসেপ্ট চিটশিট ডাউনলোড করে নিন।
               </p>
             </div>
 
@@ -198,7 +293,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </div>
               <h3 className="text-base font-medium text-slate-900">কুইজ সমাধান ও মাইলস্টোন আনলক</h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                লেকচারের বিষয় কতটা আয়ত্ত হয়েছে তা গেইমিফাইড কুইজ দিয়ে তাৎক্ষণিক যাচাই করে পরবর্তী পাঠে প্রবেশ করুন।
+                লেসনের পড়া কতটুকু বুঝলেন তা তাৎক্ষণিক কুইজ দিয়ে যাচাই করুন এবং পরবর্তী পাঠে প্রবেশ করুন।
               </p>
             </div>
 
@@ -209,7 +304,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               </div>
               <h3 className="text-base font-medium text-slate-900">ভেরিফাইড সনদ ও ক্যারিয়ার প্রোফাইল</h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                ১০০% মাইলস্টোন পূর্ণ হলে অফিশিয়াল সমাপনী সনদপত্র গ্রহণ করে আন্তর্জাতিক মার্কেটপ্লেসে সরাসরি কাজ শুরু করুন।
+                ১০০% মাইলস্টোন পূর্ণ হলে অফিশিয়াল সমাপনী সনদপত্র গ্রহণ করে জবের জন্য নিজের প্রজেক্ট ও পোর্টফোলিও শোকেস করুন।
               </p>
             </div>
 
@@ -218,18 +313,18 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 4. CURATED CAREER TRACKS (Full Width Corridor) */}
+      {/* 4. CURATED CAREER TRACKS (Right Weighted: Mascot sways in empty Left corridor) */}
       <section id="section-tracks" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-32">
-        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-lg p-8 sm:p-14 space-y-10 shadow-sm">
+        <div className="max-w-4xl ml-auto bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-7 sm:p-12 space-y-8 shadow-sm">
           
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-7">
             <div>
               <span className="text-xs font-mono text-indigo-400 uppercase tracking-widest">CURATED TRACKS</span>
               <h2 className="text-2xl sm:text-3xl font-medium mt-1">
-                উচ্চ-চাহিদাপূর্ণ ক্যারিয়ার ট্র্যাকসমূহ
+                জনপ্রিয় ক্যারিয়ার ট্র্যাকসমূহ
               </h2>
               <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                দেশসেরা সফটওয়্যার ইঞ্জিনিয়ার ও প্রোডাক্ট ডিজাইনারদের বাস্তব কর্মক্ষেত্রের অভিজ্ঞতায় সাজানো।
+                মার্কেটের বাস্তব চাহিদার সাথে মিলিয়ে তৈরি হ্যান্ডস-অন কারিকুলাম।
               </p>
             </div>
 
@@ -249,9 +344,9 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
                 <span className="text-[11px] text-indigo-300 font-mono">TRACK 01</span>
                 <Code2 className="w-4 h-4 text-indigo-400" />
               </div>
-              <h3 className="text-base font-medium">ফুলস্ট্যাক ওয়েব ডেভেলপমেন্ট</h3>
+              <h3 className="text-base font-medium">Full-Stack Web Development</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                React, Node.js, Express, REST APIs, এবং রিয়েল ডেটাবেজ অ্যাপ্লিকেশন।
+                React, Node.js, Express, REST APIs এবং Database দিয়ে কমপ্লিট ওয়েব অ্যাপ।
               </p>
               <div className="pt-2 text-xs text-indigo-300 flex items-center gap-1 font-mono">
                 <span>৩৬ ঘণ্টা · ৩৬টি লেকচার</span>
@@ -263,9 +358,9 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
                 <span className="text-[11px] text-rose-300 font-mono">TRACK 02</span>
                 <Palette className="w-4 h-4 text-rose-400" />
               </div>
-              <h3 className="text-base font-medium">ইউআই/ইউএক্স ও ফিগমা প্রো</h3>
+              <h3 className="text-base font-medium">UI/UX Design ও Figma</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                ইউজার রিসার্চ, ওয়্যারফ্রেমিং, ফিগমা অটো-লেআউট ৫.০ ও কম্পোনেন্ট লাইব্রেরি।
+                User Research, Wireframing, Figma Auto Layout ও Component Library।
               </p>
               <div className="pt-2 text-xs text-rose-300 flex items-center gap-1 font-mono">
                 <span>২৮ ঘণ্টা · ২৫টি লেকচার</span>
@@ -277,9 +372,9 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
                 <span className="text-[11px] text-emerald-300 font-mono">TRACK 03</span>
                 <Briefcase className="w-4 h-4 text-emerald-400" />
               </div>
-              <h3 className="text-base font-medium">ফ্রিল্যান্সিং আপওয়ার্ক ও ফাইভার</h3>
+              <h3 className="text-base font-medium">Freelancing: Upwork ও Fiverr</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                ১০০% কমপ্লিট প্রোফাইল, উইনিং কভার লেটার রাইটিং ও পেমেন্ট ম্যানেজমেন্ট।
+                100% কমপ্লিট প্রোফাইল, উইনিং কভার লেটার ও ক্লায়েন্ট কমিউনিকেশন।
               </p>
               <div className="pt-2 text-xs text-emerald-300 flex items-center gap-1 font-mono">
                 <span>২০ ঘণ্টা · ২০টি লেকচার</span>
@@ -300,72 +395,157 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 5. STUDENT TESTIMONIALS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 space-y-8">
-        <div className="text-center space-y-1">
-          <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">লার্নার ফিডব্যাক</span>
-          <h2 className="text-2xl font-medium text-slate-900">
-            শিক্ষার্থীদের অভিজ্ঞতা ও সাফল্যের গল্প
-          </h2>
+      {/* 5. STUDENT TESTIMONIALS (Left Weighted: Mascot sways in empty Right corridor) */}
+      <section 
+        id="section-testimonials"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-32"
+        onMouseEnter={() => setIsTestimonialHovered(true)}
+        onMouseLeave={() => setIsTestimonialHovered(false)}
+      >
+        <div className="max-w-4xl mr-auto space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="space-y-1 text-left">
+              <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">লার্নার ফিডব্যাক</span>
+              <h2 className="text-2xl sm:text-3xl font-medium text-slate-900">
+                শিক্ষার্থীদের অভিজ্ঞতা ও মতামত
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600">
+                দেশজুড়ে শিক্ষার্থী ও জুনিয়র প্রফেশনালরা ‘শিখুন’ দিয়ে কীভাবে শিখছেন শুনুন তাদের মুখেই।
+              </p>
+            </div>
+
+          {/* Slider Prev / Next Controls */}
+          <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
+            <span className="text-xs font-mono font-medium text-slate-500 tabular-nums">
+              ০{currentTestimonialIndex + 1} / ০{testimonials.length}
+            </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handlePrevTestimonial}
+                aria-label="Previous testimonial"
+                className="w-9 h-9 rounded-full bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleNextTestimonial}
+                aria-label="Next testimonial"
+                className="w-9 h-9 rounded-full bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-3 shadow-2xs">
-            <div className="flex items-center gap-1 text-amber-500">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              ))}
+        {/* Featured Testimonial Active Slide Card */}
+        <div className="relative overflow-hidden">
+          <div className="bg-white/95 border border-slate-200/90 rounded-2xl p-6 sm:p-10 shadow-xs relative space-y-6 transition-all duration-300">
+            
+            {/* Top Row: Rating & Course Track Badge */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-5">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5 text-amber-500">
+                  {[...Array(testimonials[currentTestimonialIndex].rating)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <span className="text-xs font-semibold text-slate-700 ml-1">৫.০ / ৫.০ রেটিং</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+                  {testimonials[currentTestimonialIndex].track}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{testimonials[currentTestimonialIndex].outcome}</span>
+                </span>
+              </div>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              "বাংলায় এমন গোছানো ও নিখুঁত কুইজ ভিত্তিক রিয়্যাক্ট কোর্স আগে পাইনি। প্রতিটি লেকচারের পর কুইজে XP পাওয়ার আনন্দ প্রতিদিন পড়তে বসতে বাধ্য করে।"
-            </p>
-            <div className="border-t border-slate-100 pt-3">
-              <p className="text-xs font-semibold text-slate-900">তানভীর আহমেদ</p>
-              <p className="text-[11px] text-slate-500">জুনিয়র ওয়েব ডেভেলপার, ঢাকা</p>
+
+            {/* Testimonial Quote */}
+            <div className="relative pl-6 sm:pl-8">
+              <Quote className="w-8 h-8 text-indigo-200 absolute -left-1 -top-2 transform -scale-x-100" />
+              <p className="text-base sm:text-lg text-slate-800 leading-relaxed font-normal">
+                "{testimonials[currentTestimonialIndex].quote}"
+              </p>
             </div>
+
+            {/* Student Profile Info */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100 flex-wrap gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className={`w-11 h-11 rounded-full bg-gradient-to-tr ${testimonials[currentTestimonialIndex].bgGradient} text-white flex items-center justify-center font-medium text-sm shadow-xs`}>
+                  {testimonials[currentTestimonialIndex].initials}
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-900">
+                    {testimonials[currentTestimonialIndex].name}
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    {testimonials[currentTestimonialIndex].role} · <span className="text-slate-600 font-medium">{testimonials[currentTestimonialIndex].company}</span> ({testimonials[currentTestimonialIndex].location})
+                  </p>
+                </div>
+              </div>
+
+              <span className="text-xs text-slate-400 font-normal">
+                ভেরিফাইড শিক্ষার্থী পর্যালোচনা
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Carousel Pagination Dots & Quick Selector Cards */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+          
+          {/* Direct Dot Indicators */}
+          <div className="flex items-center gap-2">
+            {testimonials.map((t, idx) => (
+              <button
+                key={t.id}
+                onClick={() => setCurrentTestimonialIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                  currentTestimonialIndex === idx 
+                    ? 'w-8 bg-indigo-600' 
+                    : 'w-2.5 bg-slate-200 hover:bg-slate-300'
+                }`}
+              />
+            ))}
           </div>
 
-          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-3 shadow-2xs">
-            <div className="flex items-center gap-1 text-amber-500">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              ))}
-            </div>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              "আপওয়ার্কে প্রথম দুই মাস কোনো জব পাচ্ছিলাম না। এখানকার কভার লেটার ও ক্লায়েন্ট সাইকোলজি লেকচার দেখে প্রপোজাল পরিবর্তন করার পর প্রথম সপ্তাহে দুটি অর্ডার পেয়েছি!"
-            </p>
-            <div className="border-t border-slate-100 pt-3">
-              <p className="text-xs font-semibold text-slate-900">সাদিয়া ইসলাম</p>
-              <p className="text-[11px] text-slate-500">ফ্রিল্যান্স ডিজাইনার, চট্টগ্রাম</p>
-            </div>
+          {/* Quick Mini Jump Bar */}
+          <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-1">
+            {testimonials.map((t, idx) => (
+              <button
+                key={t.id}
+                onClick={() => setCurrentTestimonialIndex(idx)}
+                className={`text-xs px-3 py-1.5 rounded-lg border transition-all text-left whitespace-nowrap cursor-pointer ${
+                  currentTestimonialIndex === idx
+                    ? 'border-indigo-300 bg-indigo-50/80 text-indigo-700 font-medium shadow-2xs'
+                    : 'border-slate-200 bg-white/80 hover:bg-white text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>{t.name}</span>
+                <span className="text-[10px] text-slate-400 ml-1.5 font-normal">({t.location.split(',')[0]})</span>
+              </button>
+            ))}
           </div>
 
-          <div className="bg-white/95 border border-slate-200/90 rounded-lg p-6 space-y-3 shadow-2xs">
-            <div className="flex items-center gap-1 text-amber-500">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              ))}
-            </div>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              "কমিউনিটি ফোরামে প্রশ্ন করলে সিনিয়র মেন্টররা সরাসরি কোড ব্যাখ্যা করে বুঝিয়ে দেন। একা পড়ার যে দ্বিধাদ্বন্দ্ব ছিল তা পুরোপুরি কেটে গেছে।"
-            </p>
-            <div className="border-t border-slate-100 pt-3">
-              <p className="text-xs font-semibold text-slate-900">শাকিল আহমেদ</p>
-              <p className="text-[11px] text-slate-500">শিক্ষার্থী, সিলেট</p>
-            </div>
-          </div>
+        </div>
         </div>
       </section>
 
-      {/* 6. FINAL ACTION BANNER (Mascot Centers Down) */}
+      {/* 6. FINAL ACTION BANNER (Right Weighted: Mascot sways in empty Left corridor) */}
       <section id="section-cta" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-32">
-        <div className="bg-indigo-600 text-white rounded-lg p-8 sm:p-14 text-center space-y-6 shadow-sm">
+        <div className="max-w-3xl ml-auto bg-indigo-600 text-white rounded-2xl p-8 sm:p-14 text-center space-y-6 shadow-sm">
           <div className="max-w-2xl mx-auto space-y-2">
             <h2 className="text-2xl sm:text-3xl font-medium tracking-tight">
-              আজই শুরু করুন আপনার নতুন স্কিল শেখার যাত্রা
+              আজই শুরু হোক আপনার স্কিল শেখার জার্নি
             </h2>
             <p className="text-xs sm:text-sm text-indigo-100 leading-relaxed">
-              দেরি না করে আপনার পছন্দের কোর্সে যুক্ত হোন এবং আগামী ৯০ দিনের মধ্যে নিজের ক্যারিয়ারকে নিয়ে যান নতুন উচ্চতায়।
+              পছন্দের কোর্স সিলেক্ট করুন, প্রতিদিন একটু করে শিখুন আর বাস্তব প্রজেক্ট বানিয়ে নিজের পোর্টফোলিও সাজান।
             </p>
           </div>
 
@@ -374,7 +554,7 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
               onClick={onNavigateToCourses}
               className="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-indigo-700 hover:bg-indigo-50 text-xs sm:text-sm font-medium rounded-lg transition-colors shadow-sm"
             >
-              <span>সকল কোর্স দেখুন এবং এনরোল করুন</span>
+              <span>সকল কোর্স দেখুন এবং শুরু করুন</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

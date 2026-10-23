@@ -299,21 +299,21 @@ export const GamifiedQuizModal: React.FC<GamifiedQuizModalProps> = ({
 
               <div>
                 <h4 className="text-lg font-semibold text-slate-900">
-                  {isPassed ? 'অভিনন্দন! কুইজ টেস্টে উত্তীর্ণ হয়েছেন' : 'পুনরায় চেষ্টা করুন'}
+                  {isPassed ? 'অভিনন্দন! কুইজে পাস করেছেন' : 'আবার চেষ্টা করুন'}
                 </h4>
                 <p className="text-xs text-slate-500 mt-1">
-                  আপনার অর্জিত স্কোর: <span className="font-semibold tabular-nums text-slate-800">{finalScorePercent}%</span> (পাস মার্ক {quiz.passPercentage}%)
+                  আপনার স্কোর: <span className="font-semibold tabular-nums text-slate-800">{finalScorePercent}%</span> (পাস মার্ক {quiz.passPercentage}%)
                 </p>
               </div>
 
               {isPassed ? (
                 <div className="p-3 bg-emerald-50 rounded-lg text-xs text-emerald-800 max-w-sm mx-auto">
-                  <p className="font-medium">+ {quiz.xpReward} XP পয়েন্ট আপনার প্রোফাইলে যুক্ত হয়েছে!</p>
-                  <p className="text-[11px] text-emerald-600 mt-0.5">পরবর্তী লেকচার ও মাইলস্টোন আনলক সম্পন্ন।</p>
+                  <p className="font-medium">+{quiz.xpReward} XP আপনার অ্যাকাউন্টে যোগ হয়েছে!</p>
+                  <p className="text-[11px] text-emerald-600 mt-0.5">পরবর্তী লেসন আনলক হয়ে গেছে।</p>
                 </div>
               ) : (
                 <div className="p-3 bg-amber-50 rounded-lg text-xs text-amber-800 max-w-sm mx-auto">
-                  <p>লেকচারের কনটেন্ট পুনরায় দেখে আবার কুইজটি দিন।</p>
+                  <p>লেসনটি আরেকবার দেখে আবার কুইজে অংশ নিন।</p>
                 </div>
               )}
 
@@ -323,7 +323,7 @@ export const GamifiedQuizModal: React.FC<GamifiedQuizModalProps> = ({
                   className="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium rounded-lg transition-colors inline-flex items-center gap-1.5"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>পুনরায় কুইজ দিন</span>
+                  <span>আবার কুইজ দিন</span>
                 </button>
 
                 <button

@@ -35,6 +35,11 @@ export const CommunityBoard: React.FC = () => {
   // Active expanded thread for replies
   const [expandedThreadId, setExpandedThreadId] = useState<string | null>(communityThreads[0]?.id || null);
   const [replyInput, setReplyInput] = useState<{ [threadId: string]: string }>({});
+  const [replyLikes, setReplyLikes] = useState<{ [replyId: string]: boolean }>({});
+
+  const toggleLikeReply = (replyId: string) => {
+    setReplyLikes(prev => ({ ...prev, [replyId]: !prev[replyId] }));
+  };
 
   const filteredThreads = communityThreads
     .filter(t => {
@@ -73,10 +78,10 @@ export const CommunityBoard: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
           <h1 className="text-2xl font-medium text-slate-900 tracking-tight">
-            শিক্ষার্থী কমিউনিটি ফোরাম ও প্রশ্নোত্তর
+            সহপাঠীদের সাথে আলোচনা ও প্রশ্নোত্তর
           </h1>
           <p className="text-xs text-slate-600 mt-1">
-            কোর্স চলাকালীন আপনার যে কোনো সমস্যার সমাধান খুঁজুন, কোড শেয়ার করুন ও সহপাঠীদের সাথে মতবিনিময় করুন।
+            কোর্স চলাকালীন যেকোনো কোড এরর, ডিজাইন ফিডব্যাক বা সমস্যা নিয়ে সহপাঠী ও মেন্টরদের সাথে সরাসরি আলোচনা করুন।
           </p>
         </div>
 
@@ -97,7 +102,7 @@ export const CommunityBoard: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="আলোচনা বা সমস্যার বিষয় লিখে সার্চ করুন..."
+            placeholder="যেকোনো টপিক বা সমস্যার বিষয় লিখে সার্চ করুন..."
             className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
           />
         </div>
@@ -110,7 +115,7 @@ export const CommunityBoard: React.FC = () => {
             onChange={(e) => setSelectedCourseFilter(e.target.value)}
             className="w-full md:w-auto px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
-            <option value="all">সকল কোর্সের প্রশ্ন</option>
+            <option value="all">সব কোর্সের আলোচনা</option>
             {courses.map(c => (
               <option key={c.id} value={c.id}>{c.titleBn}</option>
             ))}
@@ -122,7 +127,7 @@ export const CommunityBoard: React.FC = () => {
       <div className="space-y-4">
         {filteredThreads.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-lg p-12 text-center text-slate-500 text-xs">
-            কোনো আলোচনা পাওয়া যায়নি। আপনার কোনো জিজ্ঞাসা থাকলে প্রথম প্রশ্নটি পোস্ট করুন!
+            এখনো কোনো আলোচনা শুরু হয়নি। আপনার কোনো জিজ্ঞাসা থাকলে প্রথম প্রশ্নটি পোস্ট করুন!
           </div>
         ) : (
           filteredThreads.map((thread) => {
@@ -222,59 +227,108 @@ export const CommunityBoard: React.FC = () => {
 
                 </div>
 
-                {/* Expanded Replies Section */}
+                {/* Expanded Replies Section (Compact Facebook Comments Style) */}
                 {isExpanded && (
-                  <div className="border-t border-slate-100 bg-slate-50/60 p-5 space-y-4">
+                  <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-5 sm:py-3.5 space-y-3">
                     
-                    {/* Reply list */}
+                    {/* Compact Comment List */}
                     {thread.replies.length > 0 ? (
-                      <div className="space-y-3">
-                        {thread.replies.map((reply) => (
-                          <div key={reply.id} className="bg-white p-3.5 rounded-lg border border-slate-200/80 space-y-1.5">
-                            <div className="flex items-center justify-between text-[11px] text-slate-500">
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-medium text-slate-800">{reply.authorName}</span>
-                                {reply.authorRole === 'instructor' && (
-                                  <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.2 rounded font-medium">
-                                    মেন্টর
-                                  </span>
-                                )}
-                                {reply.authorRole === 'superadmin' && (
-                                  <span className="bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded font-medium">
-                                    অ্যাডমিন
-                                  </span>
-                                )}
+                      <div className="space-y-2">
+                        {thread.replies.map((reply) => {
+                          const isLiked = !!replyLikes[reply.id];
+                          const authorInitial = reply.authorName.trim().charAt(0) || 'শ';
+
+                          return (
+                            <div key={reply.id} className="flex items-start gap-2 sm:gap-2.5 group">
+                              {/* Facebook 28px Round Avatar */}
+                              <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium text-[11px] shrink-0 select-none mt-0.5">
+                                {authorInitial}
                               </div>
-                              <span>{reply.createdAt}</span>
+
+                              <div className="flex-1 min-w-0">
+                                {/* Gray Bubble */}
+                                <div className="inline-block bg-slate-200/70 hover:bg-slate-200/90 transition-colors rounded-2xl px-3 py-1.5 max-w-[96%] sm:max-w-[85%] text-left">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="font-semibold text-xs text-slate-900 leading-tight">
+                                      {reply.authorName}
+                                    </span>
+                                    {reply.authorRole === 'instructor' && (
+                                      <span className="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded-full font-medium">
+                                        মেন্টর
+                                      </span>
+                                    )}
+                                    {reply.authorRole === 'superadmin' && (
+                                      <span className="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.2 rounded-full font-medium">
+                                        অ্যাডমিন
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-slate-800 leading-snug font-normal mt-0.5 whitespace-pre-wrap">
+                                    {reply.contentBn}
+                                  </p>
+                                </div>
+
+                                {/* Micro Action Row (Facebook Like · Reply · Time) */}
+                                <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium pl-3 pt-0.5">
+                                  <button
+                                    onClick={() => toggleLikeReply(reply.id)}
+                                    className={`hover:underline cursor-pointer ${
+                                      isLiked ? 'text-indigo-600 font-semibold' : 'text-slate-600'
+                                    }`}
+                                  >
+                                    {isLiked ? 'পছন্দ হয়েছে' : 'লাইক'}
+                                  </button>
+                                  <span className="text-slate-300">·</span>
+                                  <button
+                                    onClick={() => setReplyInput(prev => ({ ...prev, [thread.id]: `@${reply.authorName} ` }))}
+                                    className="hover:underline text-slate-600 cursor-pointer"
+                                  >
+                                    উত্তর দিন
+                                  </button>
+                                  <span className="text-slate-300">·</span>
+                                  <span className="text-slate-400 font-normal">{reply.createdAt}</span>
+                                  {isLiked && (
+                                    <span className="inline-flex items-center gap-0.5 text-indigo-600 font-medium text-[10px] ml-1 bg-white px-1.5 py-0.2 rounded-full border border-slate-200 shadow-2xs">
+                                      👍 ১
+                                    </span>
+                                  )}
+                                </div>
+
+                              </div>
                             </div>
-                            <p className="text-xs text-slate-700 leading-relaxed font-normal">
-                              {reply.contentBn}
-                            </p>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-500 italic">এখনও কোনো উত্তর আসেনি। প্রথম উত্তরটি আপনিই লিখুন!</p>
+                      <p className="text-xs text-slate-500 italic py-1">
+                        এখনও কোনো মন্তব্য আসেনি। প্রথম মন্তব্যটি আপনিই লিখুন!
+                      </p>
                     )}
 
-                    {/* New Reply Input */}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={replyInput[thread.id] || ''}
-                        onChange={(e) => setReplyInput(prev => ({ ...prev, [thread.id]: e.target.value }))}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendReply(thread.id)}
-                        placeholder="আপনার উত্তর বা মতামত লিখুন..."
-                        className="flex-1 px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-                      />
-                      <button
-                        onClick={() => handleSendReply(thread.id)}
-                        disabled={!replyInput[thread.id]?.trim()}
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-medium rounded-lg transition-colors inline-flex items-center gap-1.5"
-                      >
-                        <Send className="w-3.5 h-3.5" />
-                        <span>পাঠান</span>
-                      </button>
+                    {/* Facebook Pill Comment Input Bar */}
+                    <div className="flex items-center gap-2 pt-1.5 border-t border-slate-200/60">
+                      <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-medium text-[11px] shrink-0 select-none">
+                        {currentRole === 'superadmin' ? 'অ্যা' : 'তা'}
+                      </div>
+                      <div className="flex-1 relative flex items-center">
+                        <input
+                          type="text"
+                          value={replyInput[thread.id] || ''}
+                          onChange={(e) => setReplyInput(prev => ({ ...prev, [thread.id]: e.target.value }))}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSendReply(thread.id)}
+                          placeholder="একটি মন্তব্য লিখুন..."
+                          className="w-full pl-3.5 pr-8 py-1.5 text-xs bg-slate-200/60 hover:bg-slate-200/80 focus:bg-white border border-transparent focus:border-slate-300 rounded-full focus:outline-none transition-all placeholder:text-slate-400"
+                        />
+                        <button
+                          onClick={() => handleSendReply(thread.id)}
+                          disabled={!replyInput[thread.id]?.trim()}
+                          className="absolute right-1.5 p-1 text-indigo-600 hover:text-indigo-800 disabled:text-slate-400 disabled:opacity-40 transition-colors cursor-pointer"
+                          title="মন্তব্য পাঠান"
+                          aria-label="মন্তব্য পাঠান"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                   </div>
@@ -290,7 +344,7 @@ export const CommunityBoard: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
           <div className="bg-white w-full max-w-lg rounded-lg border border-slate-200 shadow-xl overflow-hidden p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <h3 className="text-base font-semibold text-slate-900">
-              ফোরামে নতুন প্রশ্ন জিজ্ঞাসা করুন
+              নতুন প্রশ্ন বা আলোচনা শুরু করুন
             </h3>
 
             <form onSubmit={handleCreateQuestion} className="space-y-3.5">
@@ -317,7 +371,7 @@ export const CommunityBoard: React.FC = () => {
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="যেমন: রিয়্যাক্ট রাউটারে 404 পেজ কীভাবে হ্যান্ডল করব?"
+                  placeholder="যেমন: React Router-এ 404 page কীভাবে handle করব?"
                   className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   required
                 />
@@ -331,7 +385,7 @@ export const CommunityBoard: React.FC = () => {
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                   rows={4}
-                  placeholder="আপনি কী করতে চেয়েছিলেন এবং কী সমস্যা হচ্ছে তা বিস্তারিত লিখুন..."
+                  placeholder="কী করতে চেয়েছিলেন আর কী error বা সমস্যা হচ্ছে বিস্তারিত লিখুন..."
                   className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   required
                 />

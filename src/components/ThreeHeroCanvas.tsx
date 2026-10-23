@@ -1,8 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-export const ThreeHeroCanvas: React.FC = () => {
+interface ThreeHeroCanvasProps {
+  userScale?: number;
+}
+
+export const ThreeHeroCanvas: React.FC<ThreeHeroCanvasProps> = ({ userScale = 1.0 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const userScaleRef = useRef(userScale);
+
+  useEffect(() => {
+    userScaleRef.current = userScale;
+  }, [userScale]);
 
   useEffect(() => {
     // Large screens only (>= 1024px)
@@ -198,15 +207,16 @@ export const ThreeHeroCanvas: React.FC = () => {
     orbitRing.rotation.y = Math.PI / 10;
     mascotGroup.add(orbitRing);
 
-    // 5. Smooth 3D Catmull-Rom Spline Curve with Natural Arc Swoops
+    // 5. Smooth Catmull-Rom Spline Curve strictly through alternating empty side corridors
+    // Left sections have open space on the Right (X = +2.85)
+    // Right sections have open space on the Left (X = -2.85)
     const splineWaypoints = [
-      new THREE.Vector3(2.45, 0.15, 0.0),   // Point 0: Hero (Right Flank)
-      new THREE.Vector3(0.15, 0.45, 0.35),  // Point 1: Mid-swoop natural crest
-      new THREE.Vector3(-2.45, -0.10, 0.0), // Point 2: About (Left Flank)
-      new THREE.Vector3(-0.10, 0.40, 0.35), // Point 3: Mid-swoop natural crest
-      new THREE.Vector3(2.45, 0.15, 0.0),   // Point 4: Methodology (Right Flank)
-      new THREE.Vector3(1.55, 1.35, -0.6),  // Point 5: Tracks (Upper Hover)
-      new THREE.Vector3(0.0, 0.20, 0.25)    // Point 6: CTA (Center Stage Landing)
+      new THREE.Vector3(2.85, 0.10, 0.0),   // Point 0: Hero (Right Empty Flank)
+      new THREE.Vector3(-2.85, -0.05, 0.0), // Point 1: About (Left Empty Flank)
+      new THREE.Vector3(2.85, 0.10, 0.0),   // Point 2: Methodology (Right Empty Flank)
+      new THREE.Vector3(-2.85, -0.05, 0.0), // Point 3: Tracks (Left Empty Flank)
+      new THREE.Vector3(2.85, 0.10, 0.0),   // Point 4: Testimonials (Right Empty Flank)
+      new THREE.Vector3(-2.85, -0.05, 0.0)  // Point 5: CTA (Left Empty Flank)
     ];
 
     const splineCurve = new THREE.CatmullRomCurve3(splineWaypoints, false, 'catmullrom', 0.5);
@@ -242,57 +252,46 @@ export const ThreeHeroCanvas: React.FC = () => {
     // Steady Orbit Angle Accumulator (Calm & steady, zero scroll jumps)
     let orbitPhase = 0;
 
-    // Direct Section Scroll Offset Progress Calculation (ZERO lag!)
+    // Direct Section Scroll Offset Progress Calculation (Synchronized with 6 section corridors)
     const calculateSplineTFromSections = (): number => {
       const hero = document.getElementById('section-hero');
       const about = document.getElementById('section-about');
       const methodology = document.getElementById('section-methodology');
       const tracks = document.getElementById('section-tracks');
+      const testimonials = document.getElementById('section-testimonials');
       const cta = document.getElementById('section-cta');
 
       if (!hero || !about) {
-        // Fallback to basic scroll ratio
         const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
         return Math.min(1, Math.max(0, window.scrollY / maxScroll));
       }
 
-      // Measured scroll offset anchor points (where each section enters active reading zone)
       const scrollY = window.scrollY;
       const heroY = 0;
       const aboutY = Math.max(100, about.offsetTop - window.innerHeight * 0.35);
       const methodologyY = methodology ? Math.max(aboutY + 200, methodology.offsetTop - window.innerHeight * 0.35) : aboutY + 800;
       const tracksY = tracks ? Math.max(methodologyY + 200, tracks.offsetTop - window.innerHeight * 0.35) : methodologyY + 800;
-      const ctaY = cta ? Math.max(tracksY + 200, cta.offsetTop - window.innerHeight * 0.45) : tracksY + 800;
+      const testimonialsY = testimonials ? Math.max(tracksY + 200, testimonials.offsetTop - window.innerHeight * 0.35) : tracksY + 800;
+      const ctaY = cta ? Math.max(testimonialsY + 200, cta.offsetTop - window.innerHeight * 0.45) : testimonialsY + 800;
 
-      // Section intervals mapped across the spline curve points:
-      // Hero (scrollY: 0 -> aboutY) => t: 0.0 -> 0.333 (Point 0 to Point 2: Right to Left)
-      // About (scrollY: aboutY -> methodologyY) => t: 0.333 -> 0.666 (Point 2 to Point 4: Left to Right)
-      // Methodology (scrollY: methodologyY -> tracksY) => t: 0.666 -> 0.833 (Point 4 to Point 5: Right to Tracks)
-      // Tracks -> CTA (scrollY: tracksY -> ctaY) => t: 0.833 -> 1.0 (Point 5 to Point 6: Tracks to Center)
-
+      // 5 smooth step intervals mapping across the 6 waypoints
       if (scrollY <= heroY) {
         return 0;
       } else if (scrollY < aboutY) {
-        // Linear progression through Hero fold into About
         const u = (scrollY - heroY) / (aboutY - heroY);
-        // Smoothstep interpolation for natural easing
-        const smoothU = u * u * (3 - 2 * u);
-        return smoothU * 0.333;
+        return (u * u * (3 - 2 * u)) * 0.2;
       } else if (scrollY < methodologyY) {
-        // Progression through About into Methodology
         const u = (scrollY - aboutY) / (methodologyY - aboutY);
-        const smoothU = u * u * (3 - 2 * u);
-        return 0.333 + smoothU * 0.333;
+        return 0.2 + (u * u * (3 - 2 * u)) * 0.2;
       } else if (scrollY < tracksY) {
-        // Progression through Methodology into Tracks
         const u = (scrollY - methodologyY) / (tracksY - methodologyY);
-        const smoothU = u * u * (3 - 2 * u);
-        return 0.666 + smoothU * 0.167;
+        return 0.4 + (u * u * (3 - 2 * u)) * 0.2;
+      } else if (scrollY < testimonialsY) {
+        const u = (scrollY - tracksY) / (testimonialsY - tracksY);
+        return 0.6 + (u * u * (3 - 2 * u)) * 0.2;
       } else {
-        // Final approach into CTA
-        const u = Math.min(1, Math.max(0, (scrollY - tracksY) / Math.max(100, ctaY - tracksY)));
-        const smoothU = u * u * (3 - 2 * u);
-        return 0.833 + smoothU * 0.167;
+        const u = Math.min(1, Math.max(0, (scrollY - testimonialsY) / Math.max(100, ctaY - testimonialsY)));
+        return 0.8 + (u * u * (3 - 2 * u)) * 0.2;
       }
     };
 
@@ -315,14 +314,14 @@ export const ThreeHeroCanvas: React.FC = () => {
       const t = calculateSplineTFromSections();
       splineCurve.getPoint(t, splinePos);
 
-      // 2. Idle breathing bob + subtle mouse parallax
+      // 2. Idle breathing bob + subtle mouse parallax (mascot stays cleanly in empty corridor)
       const breathingBob = Math.sin(elapsed * 1.8) * 0.05;
-      const finalX = splinePos.x + mouseX * 0.4;
-      const finalY = splinePos.y + breathingBob - mouseY * 0.4;
+      const finalX = splinePos.x + mouseX * 0.3;
+      const finalY = splinePos.y + breathingBob - mouseY * 0.3;
       const finalZ = splinePos.z;
 
-      // Dynamic scale: expands slightly at center stage, compacts during transit
-      const targetScale = t > 0.85 ? 1.15 : 1.0;
+      // Gentle natural breathing scale (fits comfortably in empty margin)
+      const targetScale = 0.96 + Math.sin(elapsed * 1.4) * 0.03;
 
       // 3. Silky Smooth Exponential Dampening
       mascotGroup.position.x = THREE.MathUtils.damp(mascotGroup.position.x, finalX, 3.2, delta);
@@ -330,7 +329,7 @@ export const ThreeHeroCanvas: React.FC = () => {
       mascotGroup.position.z = THREE.MathUtils.damp(mascotGroup.position.z, finalZ, 3.2, delta);
 
       const currentScale = mascotGroup.scale.x;
-      const newScale = THREE.MathUtils.damp(currentScale, targetScale, 3.2, delta);
+      const newScale = THREE.MathUtils.damp(currentScale, targetScale, 3.5, delta);
       mascotGroup.scale.set(newScale, newScale, newScale);
 
       // 4. Mascot Natural Banking & Tilt

@@ -95,7 +95,7 @@ export const SyllabusModal: React.FC<SyllabusModalProps> = ({
         <div className="p-6 max-h-[60vh] overflow-y-auto space-y-5">
           <div>
             <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider mb-1">
-              কোর্সের উদ্দেশ্য ও সিলেবাসের রূপরেখা
+              কোর্স ওভারভিউ ও সিলেবাস
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed font-normal">
               {course.subtitleBn}
@@ -165,12 +165,12 @@ export const SyllabusModal: React.FC<SyllabusModalProps> = ({
           >
             {enrolled ? (
               <>
-                <span>সরাসরি ক্লাসরুমে যান</span>
+                <span>ক্লাসরুমে যান</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
             ) : (
               <>
-                <span>এই কোর্সে যুক্ত হোন</span>
+                <span>কোর্সে এনরোল করুন</span>
                 <CheckCircle className="w-3.5 h-3.5" />
               </>
             )}

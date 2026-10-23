@@ -26,11 +26,11 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<CourseCategory>('all');
 
   const categories: { id: CourseCategory; labelBn: string }[] = [
-    { id: 'all', labelBn: 'সকল ক্যাটাগরি' },
-    { id: 'web-dev', labelBn: 'ওয়েব প্রোগ্রামিং' },
-    { id: 'ui-ux', labelBn: 'ইউআই/ইউএক্স ডিজাইন' },
-    { id: 'freelancing', labelBn: 'ফ্রিল্যান্সিং ক্যারিয়ার' },
-    { id: 'graphics', labelBn: 'গ্রাফিক্স ও ভিডিও' },
+    { id: 'all', labelBn: 'সকল কোর্স' },
+    { id: 'web-dev', labelBn: 'Web Development' },
+    { id: 'ui-ux', labelBn: 'UI/UX Design' },
+    { id: 'freelancing', labelBn: 'Freelancing' },
+    { id: 'graphics', labelBn: 'Video & Motion' },
   ];
 
   // Filtered courses
@@ -54,13 +54,13 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 border border-indigo-100 rounded-md text-xs text-indigo-700 mb-2">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>সকল ক্যারিয়ার কোর্স ও সিলেবাস ডিরেক্টরি</span>
+            <span>ক্যারিয়ার ট্র্যাক ও কোর্স ডিরেক্টরি</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-medium text-slate-900 tracking-tight">
-            সকল কোর্স ও প্রফেশনাল কারিকুলাম
+            সকল কোর্স ও কারিকুলাম
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            আপনার পছন্দের বিষয় নির্বাচন করুন, সম্পূর্ণ সিলেবাস পর্যালোচনা করুন এবং ক্লাসরুমে যুক্ত হয়ে পড়ালেখা শুরু করুন।
+            আপনার পছন্দের ট্র্যাক বেছে নিন, সম্পূর্ণ সিলেবাস দেখুন এবং ক্লাসরুমে যুক্ত হয়ে সরাসরি শেখা শুরু করুন।
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="কোর্স, স্কিল বা মেন্টরের নাম দিয়ে খুঁজুন..."
+              placeholder="কোর্স, স্কিল বা টপিকের নাম দিয়ে খুঁজুন..."
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-2xs"
             />
             {searchQuery && (

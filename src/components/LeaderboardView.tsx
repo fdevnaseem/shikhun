@@ -87,11 +87,11 @@ export const LeaderboardView: React.FC = () => {
             <Trophy className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-normal">জাতীয় র‍্যাংকিং অবস্থান</p>
+            <p className="text-xs text-slate-500 font-normal">লিডারবোর্ড অবস্থান</p>
             <p className="text-2xl font-semibold text-slate-900 font-mono tabular-nums">
-              #০২ <span className="text-sm font-sans font-normal text-indigo-600">সারা দেশে</span>
+              #০২ <span className="text-sm font-sans font-normal text-indigo-600">সার্বিক</span>
             </p>
-            <p className="text-[11px] text-slate-400 mt-0.5">শীর্ষ ১% সক্রিয় শিক্ষার্থীদের তালিকায়</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">টপ পারফরমারদের তালিকায়</p>
           </div>
         </div>
 
@@ -101,10 +101,10 @@ export const LeaderboardView: React.FC = () => {
       <div className="bg-white border border-slate-200/90 rounded-lg p-6 space-y-4">
         <div>
           <h2 className="text-base font-semibold text-slate-900">
-            আপনার অর্জিত ব্যাজ ও মাইলস্টোন পদক
+            অর্জিত ব্যাজসমূহ
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            নিয়মিত ক্লাসে অংশগ্রহণ ও কুইজে কৃতিত্বের স্বীকৃতি হিসেবে ব্যাজ আনলক হয়।
+            নিয়মিত পড়ালেখা এবং কুইজ সম্পন্ন করলে এসব ব্যাজ আনলক হয়।
           </p>
         </div>
 

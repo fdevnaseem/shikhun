@@ -42,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
                   শিখুন
                 </span>
                 <span className="text-[10px] text-slate-500 -mt-1 font-normal tracking-wide">
-                  শিলিগুরির আলোয় নতুন ক্যারিয়ার
+                  প্রজেক্ট-বেইজড স্কিল লার্নিং
                 </span>
               </div>
             </button>

@@ -225,7 +225,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({ courseId, onBa
               >
                 <span className="flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5" />
-                  লেকচার সামারি ও নোটস
+                  লেকচার নোটস
                 </span>
               </button>
 
@@ -239,7 +239,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({ courseId, onBa
               >
                 <span className="flex items-center gap-1.5">
                   <FileDown className="w-3.5 h-3.5" />
-                  পিডিএফ ও রিসোর্স
+                  PDF ও চিটশিট
                 </span>
               </button>
 
@@ -274,11 +274,11 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({ courseId, onBa
                   </div>
 
                   <div className="p-3.5 bg-indigo-50/50 rounded-lg border border-indigo-100 text-xs space-y-1.5">
-                    <p className="font-medium text-indigo-900">শিখন ফল (Learning Outcomes):</p>
+                    <p className="font-medium text-indigo-900">কী শিখবেন (Key Takeaways):</p>
                     <ul className="list-disc list-inside space-y-1 text-slate-600">
-                      <li>বাস্তব প্রজেক্টে এই টেকনোলজি বা পদ্ধতির ব্যবহারিক প্রয়োগ।</li>
-                      <li>আন্তর্জাতিক ইন্ডাস্ট্রি স্ট্যান্ডার্ড অনুযায়ী কোড বা ডিজাইন অর্গানাইজেশন।</li>
-                      <li>সাধারণ ভুলগুলো এড়িয়ে দ্রুত কাজের গতি বাড়ানো।</li>
+                      <li>বাস্তব প্রজেক্টে এই টেকনোলজি কীভাবে সরাসরি কাজে লাগাবেন।</li>
+                      <li>ইন্ডাস্ট্রি স্ট্যান্ডার্ড মেনে পরিষ্কার ও পরিচ্ছন্ন কোড/ডিজাইন অর্গানাইজেশন।</li>
+                      <li>কমন ভুলগুলো এড়িয়ে দ্রুত প্রোডাকশন-রেডি কাজ করার টেকনিক।</li>
                     </ul>
                   </div>
                 </div>
@@ -297,7 +297,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({ courseId, onBa
                           {activeLesson?.pdfTitle || 'Lecture_Companion_CheatSheet.pdf'}
                         </p>
                         <p className="text-[11px] text-slate-500">
-                          মুদ্রণযোগ্য ও সেভ করে রাখার মতো কমপ্লিট লেকচার হ্যান্ডআউট (PDF, 2.4 MB)
+                          ডাউনলোডযোগ্য কমপ্লিট লেকচার চিটশিট (PDF)
                         </p>
                       </div>
                     </div>
@@ -373,13 +373,32 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({ courseId, onBa
                           <p className="text-xs font-medium text-slate-900">{thread.titleBn}</p>
                           <p className="text-xs text-slate-600">{thread.contentBn}</p>
 
-                          {/* Replies */}
+                          {/* Replies (Facebook-style compact bubbles) */}
                           {thread.replies.length > 0 && (
-                            <div className="mt-2 pl-3 border-l-2 border-indigo-100 space-y-1.5 bg-slate-50/50 p-2 rounded">
+                            <div className="mt-2.5 pt-2 border-t border-slate-100 space-y-2">
                               {thread.replies.map((reply) => (
-                                <div key={reply.id} className="text-[11px]">
-                                  <span className="font-medium text-indigo-700">{reply.authorName}: </span>
-                                  <span className="text-slate-700">{reply.contentBn}</span>
+                                <div key={reply.id} className="flex items-start gap-2">
+                                  <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium text-[10px] shrink-0 mt-0.5 select-none">
+                                    {reply.authorName.trim().charAt(0) || 'শ'}
+                                  </div>
+                                  <div className="inline-block bg-slate-100 hover:bg-slate-200/60 rounded-2xl px-3 py-1.5 max-w-[92%] text-left">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="font-semibold text-[11px] text-slate-900 leading-tight">
+                                        {reply.authorName}
+                                      </span>
+                                      {reply.authorRole === 'instructor' && (
+                                        <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1.5 py-0.2 rounded-full font-medium">
+                                          মেন্টর
+                                        </span>
+                                      )}
+                                      <span className="text-[10px] text-slate-400 font-normal">
+                                        · {reply.createdAt}
+                                      </span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-800 leading-snug mt-0.5 whitespace-pre-wrap">
+                                      {reply.contentBn}
+                                    </p>
+                                  </div>
                                 </div>
                               ))}
                             </div>

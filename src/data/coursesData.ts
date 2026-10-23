@@ -3,10 +3,10 @@ import { Course, CommunityThread, LeaderboardEntry } from '../types';
 export const INITIAL_COURSES: Course[] = [
   {
     id: 'web-dev-fullstack',
-    titleBn: 'ফুলস্ট্যাক ওয়েব ডেভেলপমেন্ট উইথ রিয়্যাক্ট ও নোড.জেএস',
-    subtitleBn: 'জিরো থেকে হিরো: আধুনিক জাভাস্ক্রিপ্ট, রিয়্যাক্ট, নোড এবং ডেটাবেজ দিয়ে ফুলস্ট্যাক অ্যাপ্লিকেশন তৈরি করুন।',
+    titleBn: 'Full-Stack Web Development with React ও Node.js',
+    subtitleBn: 'জিরো থেকে শুরু করে JavaScript, React, Node.js আর Database দিয়ে সরাসরি প্রোডাকশন-রেডি ওয়েব অ্যাপ বানাতে শিখুন।',
     category: 'web-dev',
-    categoryLabelBn: 'প্রোগ্রামিং',
+    categoryLabelBn: 'Web Development',
     instructor: 'মাহমুদুল হাসান',
     instructorRole: 'Lead Software Engineer, Dhaka',
     enrolledCount: 1420,
@@ -18,46 +18,46 @@ export const INITIAL_COURSES: Course[] = [
     chapters: [
       {
         id: 'wd-ch-1',
-        titleBn: 'অধ্যায় ১: ওয়েব ফাউন্ডেশন ও আধুনিক জাভাস্ক্রিপ্ট',
+        titleBn: 'অধ্যায় ১: Web Foundation ও আধুনিক JavaScript',
         lessons: [
           {
             id: 'wd-l-101',
-            titleBn: '১.১ আধুনিক ওয়েব আর্কিটেকচার ও ক্লায়েন্ট-সার্ভার মডেল',
+            titleBn: '১.১ Modern Web Architecture ও Client-Server মডেল',
             duration: '১৪ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/SccSCuHhOw0',
-            summaryBn: 'ওয়েবের ব্যাকগ্রাউন্ড প্রসেসিং, ডিএনএস কিভাবে কাজ করে এবং ক্লায়েন্ট ব্রাউজার কীভাবে সার্ভার থেকে ডেটা রিসিভ করে তার স্পষ্ট চিত্রায়ন।',
+            summaryBn: 'DNS কীভাবে কাজ করে, ব্রাউজার আর সার্ভারের মধ্যে ডেটা আদান-প্রদান এবং ব্যাকএন্ড প্রসেসিংয়ের প্র্যাক্টিক্যাল ধারণা।',
             pdfResourceUrl: '#download-pdf-architecture',
             pdfTitle: 'Web_Architecture_Foundations_BN.pdf',
           },
           {
             id: 'wd-l-102',
-            titleBn: '১.২ ইএস৬+ সিনট্যাক্স, অ্যারো ফাংশন ও ডিস্ট্রাকচারিং',
+            titleBn: '১.২ ES6+ Syntax, Arrow Functions ও Destructuring',
             duration: '২২ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/NCwa_xi0Uuc',
-            summaryBn: 'মডার্ন জাভাস্ক্রিপ্ট সিনট্যাক্স, কনস্ট, লেট, স্প্রেড অপারেটর এবং অবজেক্ট ডিস্ট্রাকচারিং নিয়ে বাস্তবিক কোডিং উদাহরণ।',
+            summaryBn: 'Modern JavaScript-এর প্রয়োজনীয় ফিচার: const, let, spread operator এবং object destructuring দিয়ে পরিষ্কার কোড লেখার নিয়ম।',
             pdfResourceUrl: '#download-pdf-es6',
             pdfTitle: 'Modern_ES6_Cheatsheet_Shikhun.pdf',
             quiz: {
               id: 'quiz-wd-1',
-              titleBn: 'মডার্ন জাভাস্ক্রিপ্ট নলেজ চেক কুইজ',
+              titleBn: 'Modern JavaScript কুইজ',
               passPercentage: 70,
               xpReward: 150,
               questions: [
                 {
                   id: 'q-wd-1',
-                  questionBn: 'জাভাস্ক্রিপ্টে const কিওয়ার্ড দিয়ে ডিক্লেয়ার করা ভ্যারিয়েবলের ক্ষেত্রে কোনটি সঠিক?',
+                  questionBn: 'JavaScript-এ const দিয়ে ডিক্লেয়ার করা variable-এর ক্ষেত্রে কোনটি সঠিক?',
                   optionsBn: [
-                    'ভ্যারিয়েবলটি পুনরায় রি-অ্যাসাইন করা যাবে না',
-                    'ভ্যারিয়েবলটি গ্লোবাল স্কোপে থাকবে সবসময়',
-                    'ভ্যারিয়েবলের মান কখনো মেমোরিতে সেভ হয় না',
-                    'এটি শুধুমাত্র লুপের ভেতরে ব্যবহার করা যায়'
+                    'variable-টি পুনরায় re-assign করা যাবে না',
+                    'variable-টি সবসময় global scope-এ থাকবে',
+                    'variable-এর মান কখনো মেমরিতে সেভ হয় না',
+                    'এটি শুধুমাত্র loop-এর ভেতরে ব্যবহার করা যায়'
                   ],
                   correctIndex: 0,
-                  explanationBn: 'const কিওয়ার্ড দিয়ে ডিক্লেয়ার করা ভ্যারিয়েবলের রেফারেন্স অপরিবর্তনীয় থাকে, ফলে এটিকে নতুন কোনো মান দিয়ে রি-অ্যাসাইন করা সম্ভব নয়।'
+                  explanationBn: 'const দিয়ে ডিক্লেয়ার করা variable-এর রেফারেন্স ফিক্সড থাকে, তাই একে নতুন মান দিয়ে re-assign করা যায় না।'
                 },
                 {
                   id: 'q-wd-2',
-                  questionBn: 'অ্যারে থেকে উপাদান সহজে আলাদা করার জন্য আধুনিক সিনট্যাক্স কোনটি?',
+                  questionBn: 'Array বা Object থেকে ভ্যালু সহজে আলাদা করার আধুনিক syntax কোনটি?',
                   optionsBn: [
                     'Array Concatenation',
                     'Destructuring Assignment',
@@ -65,11 +65,11 @@ export const INITIAL_COURSES: Course[] = [
                     'Currying Function'
                   ],
                   correctIndex: 1,
-                  explanationBn: 'Destructuring Assignment এর মাধ্যমে এক লাইনে অ্যারে বা অবজেক্টের ভ্যালু নির্দিষ্ট ভ্যারিয়েবলে এক্সট্র্যাক্ট করা যায়।'
+                  explanationBn: 'Destructuring Assignment দিয়ে এক লাইনেই Array বা Object থেকে প্রোপার্টিগুলো আলাদা variable-এ নেওয়া যায়।'
                 },
                 {
                   id: 'q-wd-3',
-                  questionBn: 'Promise এর ৩টি প্রধান অবস্থা (States) কী কী?',
+                  questionBn: 'JavaScript-এ Promise-এর ৩টি প্রধান state কী কী?',
                   optionsBn: [
                     'Pending, Fulfilled, Rejected',
                     'Start, Running, End',
@@ -77,7 +77,7 @@ export const INITIAL_COURSES: Course[] = [
                     'Open, Wait, Closed'
                   ],
                   correctIndex: 0,
-                  explanationBn: 'জাভাস্ক্রিপ্ট Promise এর তিনটি স্টেট: Pending (অপেক্ষমান), Fulfilled (সফল) এবং Rejected (ব্যর্থ)।'
+                  explanationBn: 'Promise-এর তিনটি স্টেট: Pending (কাজ চলছে), Fulfilled (সফল) এবং Rejected (ব্যর্থ বা এরর)।'
                 }
               ]
             }
@@ -86,54 +86,54 @@ export const INITIAL_COURSES: Course[] = [
       },
       {
         id: 'wd-ch-2',
-        titleBn: 'অধ্যায় ২: রিয়্যাক্ট কম্পোনেন্ট ও স্টেট ম্যানেজমেন্ট',
+        titleBn: 'অধ্যায় ২: React Components ও State Management',
         lessons: [
           {
             id: 'wd-l-201',
-            titleBn: '২.১ ফাংশনাল কম্পোনেন্ট ও JSX রূপরেখা',
+            titleBn: '২.১ Functional Components ও JSX ধারণা',
             duration: '১৯ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/w7ejDZ8SWv8',
-            summaryBn: 'রিয়্যাক্টের কোর আইডিয়া: রি-ইউজেবল কম্পোনেন্ট তৈরি এবং প্রপসের সাহায্যে এক কম্পোনেন্ট থেকে অন্যটিতে ডেটা পাঠানো।',
+            summaryBn: 'React-এর মূল ভিত্তি: রি-ইউজেবল কম্পোনেন্ট তৈরি করা এবং props দিয়ে এক কম্পোনেন্ট থেকে আরেকটিতে ডেটা পাঠানো।',
             pdfResourceUrl: '#download-pdf-react-basics',
             pdfTitle: 'React_Component_Mindmap_BN.pdf',
           },
           {
             id: 'wd-l-202',
-            titleBn: '২.২ useState ও useEffect হুকের গভীর বিশ্লেষণ',
+            titleBn: '২.২ useState ও useEffect Hook প্র্যাক্টিক্যাল ব্যবহার',
             duration: '২৬ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/O6P86uwfdR0',
-            summaryBn: 'কম্পোনেন্টে লোকাল স্টেট হ্যান্ডলিং এবং ডেটা ফেচিং বা লাইফসাইকেল অ্যাকশনের জন্য useEffect হুকের ব্যবহার।',
+            summaryBn: 'কম্পোনেন্টে State হ্যান্ডলিং, API থেকে ডেটা ফেচিং এবং Lifecycle ম্যানেজমেন্টের সহজ গাইড।',
             pdfResourceUrl: '#download-pdf-hooks',
             pdfTitle: 'React_Hooks_DeepDive_Guide.pdf',
             quiz: {
               id: 'quiz-wd-2',
-              titleBn: 'রিয়্যাক্ট স্টেট ও হুক কুইজ টেস্ট',
+              titleBn: 'React State ও Hooks কুইজ',
               passPercentage: 70,
               xpReward: 200,
               questions: [
                 {
                   id: 'q-wd-201',
-                  questionBn: 'useEffect এ ডিপেনডেন্সি অ্যারে [] খালি রাখলে কী ঘটবে?',
+                  questionBn: 'useEffect-এ dependency array [] ফাঁকা রাখলে কী ঘটবে?',
                   optionsBn: [
-                    'ইফেক্টটি প্রতি রেন্ডারে রান করবে',
-                    'ইফেক্টটি কম্পোনেন্ট প্রথমবার মাউন্ট হলে একবারই রান করবে',
-                    'ব্রাউজারে এরর আসবে',
-                    'কম্পোনেন্ট রি-রেন্ডার হওয়া বন্ধ হয়ে যাবে'
+                    'Effect-টি প্রতি render-এ চলবে',
+                    'Effect-টি কম্পোনেন্ট প্রথমবার mount হলে একবারই চলবে',
+                    'ব্রাউজারে সরাসরি error আসবে',
+                    'কম্পোনেন্ট আর কখনো re-render হবে না'
                   ],
                   correctIndex: 1,
-                  explanationBn: 'খালি ডিপেনডেন্সি অ্যারে [] দিলে রিয়্যাক্ট নিশ্চিত করে যে ইফেক্টটি শুধুমাত্র ইনিশিয়াল মাউন্টের পর একবার চলবে।'
+                  explanationBn: 'ফাঁকা dependency array [] দিলে React কম্পোনেন্ট প্রথমবার রেন্ডার (mount) হওয়ার পর কোডটি কেবল একবারই রান করে।'
                 },
                 {
                   id: 'q-wd-202',
-                  questionBn: 'রিয়্যাক্টে স্টেট সরাসরি পরিবর্তন (Mutate) করা কেন অনুচিত?',
+                  questionBn: 'React-এ state সরাসরি mutate বা পরিবর্তন করা কেন ভুল?',
                   optionsBn: [
-                    'কারণ এটি করলে রিয়্যাক্ট রি-রেন্ডার ট্রিগার করতে পারে না',
-                    'কারণ মেমোরি ক্র্যাশ করে',
-                    'কারণ সিএসএস নষ্ট হয়ে যায়',
-                    'জাভাস্ক্রিপ্ট এটিকে সাপোর্ট করে না'
+                    'কারণ সরাসরি mutate করলে React re-render ট্রিগার করতে পারে না',
+                    'কারণ এতে ব্রাউজার ক্র্যাশ করে',
+                    'কারণ CSS ফাইল ডিলিট হয়ে যায়',
+                    'JavaScript-এ অবজেক্ট পরিবর্তন নিষিদ্ধ'
                   ],
                   correctIndex: 0,
-                  explanationBn: 'রিয়্যাক্ট রেফারেন্স তুলনা করে ডম আপডেট করে। সরাসরি মিউটেট করলে রিয়্যাক্ট স্টেট পরিবর্তনের সিগন্যাল পায় না।'
+                  explanationBn: 'React স্টেট পরিবর্তনের রেফারেন্স ট্র্যাক করে re-render ট্রিগার করে। সরাসরি mutate করলে React টের পায় না, ফলে UI আপডেট হয় না।'
                 }
               ]
             }
@@ -144,10 +144,10 @@ export const INITIAL_COURSES: Course[] = [
   },
   {
     id: 'uiux-figma-mastery',
-    titleBn: 'ইউআই/ইউএক্স ডিজাইন অ্যান্ড ফিগমা প্রো মাস্টারক্লাস',
-    subtitleBn: 'ইউজার রিসার্চ, ওয়্যারফ্রেম, কালার থিওরি এবং ফিগমার অ্যাডভান্সড অটো-লেআউট শিখে আন্তর্জাতিক মানের ইন্টারফেস তৈরি করুন।',
+    titleBn: 'UI/UX Design ও Figma Mastery',
+    subtitleBn: 'User Research, Wireframing, Color Theory এবং Figma Auto Layout দিয়ে বাস্তব প্রজেক্টের ইন্টারফেস ডিজাইন তৈরি করুন।',
     category: 'ui-ux',
-    categoryLabelBn: 'ইউআই/ইউএক্স',
+    categoryLabelBn: 'UI/UX Design',
     instructor: 'সাবরিনা আক্তার',
     instructorRole: 'Product Designer at FinTech, Singapore',
     enrolledCount: 980,
@@ -159,54 +159,54 @@ export const INITIAL_COURSES: Course[] = [
     chapters: [
       {
         id: 'ui-ch-1',
-        titleBn: 'অধ্যায় ১: ডিজাইন থিংকিং ও ওয়্যারফ্রেমিং',
+        titleBn: 'অধ্যায় ১: Design Thinking ও Wireframing',
         lessons: [
           {
             id: 'ui-l-101',
-            titleBn: '১.১ ইউজার সেন্ট্রিক ডিজাইন ও প্রবলেম স্টেটমেন্ট নির্ধারণ',
+            titleBn: '১.১ User-Centric Design ও Problem Statement',
             duration: '১৭ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/c9Wg6Cb_YlU',
-            summaryBn: 'ব্যবহারকারীর মূল সমস্যা চিহ্নিত করে সমাধানমুখী ইন্টারফেস স্ট্রাকচার দাঁড় করানোর বাস্তব গাইডলাইন।',
+            summaryBn: 'ইউজারের মূল সমস্যা খুঁজে বের করে সমাধানমুখী পরিষ্কার লেআউট দাঁড় করানোর প্র্যাক্টিক্যাল গাইডলাইন।',
             pdfResourceUrl: '#download-pdf-design-thinking',
             pdfTitle: 'Design_Thinking_Workbook_BN.pdf',
           },
           {
             id: 'ui-l-102',
-            titleBn: '১.২ লো-ফিডেলিটি ওয়্যারফ্রেম ও ইনফরমেশন আর্কিটেকচার',
+            titleBn: '১.২ Low-Fidelity Wireframe ও Information Architecture',
             duration: '২৪ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/FTFaQWZBqQ8',
-            summaryBn: 'স্কেচ থেকে ডিজিটাল ওয়্যারফ্রেমে রূপান্তরের ধাপসমূহ ও কন্টেন্ট প্রায়োরিটাইজেশন।',
+            summaryBn: 'কাগজে স্কেচ করা আইডিয়াকে ডিজিটাল ওয়্যারফ্রেমে রূপান্তর এবং কন্টেন্ট বিন্যাসের নিয়মাবলী।',
             pdfResourceUrl: '#download-pdf-wireframe',
             pdfTitle: 'Wireframing_Checklist_Figma.pdf',
             quiz: {
               id: 'quiz-ui-1',
-              titleBn: 'ডিজাইন থিংকিং ও ইউজার জার্নি কুইজ',
+              titleBn: 'Design Thinking ও User Journey কুইজ',
               passPercentage: 66,
               xpReward: 160,
               questions: [
                 {
                   id: 'q-ui-101',
-                  questionBn: 'ডিজাইন থিংকিং প্রসেসের প্রথম ধাপ কোনটি?',
+                  questionBn: 'Design Thinking প্রসেসের প্রথম ধাপ কোনটি?',
                   optionsBn: [
-                    'প্রোটোটাইপ তৈরি করা',
-                    'ব্যবহারকারীর অনুভূতি বোঝা (Empathize)',
-                    'ভিজ্যুয়াল সিএসএস লেখা',
-                    'ইউজার ইন্টারভিউ বাতিল করা'
+                    'Prototype তৈরি করা',
+                    'ইউজারের সমস্যা ও অনুভূতি বোঝা (Empathize)',
+                    'Visual CSS কোডিং',
+                    'সরাসরি ফাইনাল ডিজাইন শুরু করা'
                   ],
                   correctIndex: 1,
-                  explanationBn: 'ডিজাইন থিংকিং শুরু হয় ব্যবহারকারীর প্রয়োজন ও বেদনাদায়ক বিষয়গুলো গভীরভাবে অনুভব (Empathize) করার মাধ্যমে।'
+                  explanationBn: 'Design Thinking শুরু হয় ইউজারের আসল প্রয়োজন এবং পেইন-পয়েন্ট গভীরভাবে বোঝার (Empathize) মাধ্যমে।'
                 },
                 {
                   id: 'q-ui-102',
-                  questionBn: 'লো-ফিডেলিটি ওয়্যারফ্রেমে কালার বা চমৎকার ফন্ট পরিহার করার মূল কারণ কী?',
+                  questionBn: 'Low-fidelity wireframe-এ কালার বা ফ্যান্সি ফন্ট এড়িয়ে চলার প্রধান কারণ কী?',
                   optionsBn: [
-                    'যাতে লেআউট এবং ইনফরমেশন স্ট্রাকচারের ওপর পূর্ণ মনোযোগ থাকে',
-                    'ফিগমায় কালার ব্যবহার করা কঠিন তাই',
-                    'ক্লায়েন্টরা কালার পছন্দ করে না',
+                    'যাতে লেআউট ও কন্টেন্ট স্ট্রাকচারের ওপর পূর্ণ মনোযোগ থাকে',
+                    'Figma-তে কালার ব্যবহার করা কঠিন তাই',
+                    'ক্লায়েন্টরা কালার অপছন্দ করে',
                     'কারণ এতে ফাইল সাইজ ছোট হয়'
                   ],
                   correctIndex: 0,
-                  explanationBn: 'প্রাথমিক ওয়্যারফ্রেমে ভিজ্যুয়াল সাজসজ্জার চেয়ে কনটেন্ট বিন্যাস ও ইউজার জার্নির কার্যকারিতা যাচাই করা প্রধান উদ্দেশ্য।'
+                  explanationBn: 'শুরুতেই সাজসজ্জায় সময় নষ্ট না করে কন্টেন্ট স্ট্রাকচার ও ইউজার ফ্লো নিখুঁত রাখাই ওয়্যারফ্রেমের মূল উদ্দেশ্য।'
                 }
               ]
             }
@@ -215,14 +215,14 @@ export const INITIAL_COURSES: Course[] = [
       },
       {
         id: 'ui-ch-2',
-        titleBn: 'অধ্যায় ২: ফিগমা অটো-লেআউট ও কম্পোনেন্ট লাইব্রেরি',
+        titleBn: 'অধ্যায় ২: Figma Auto Layout ও Component Library',
         lessons: [
           {
             id: 'ui-l-201',
-            titleBn: '২.১ অটো-লেআউট ৫.০ ও রেসপনসিভ কনস্ট্রেইন্টস',
+            titleBn: '২.১ Auto Layout ও Responsive Constraints',
             duration: '৩১ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/NrKX46DzkGQ',
-            summaryBn: 'প্যাডিং, গ্যাপ, ফ্লেক্সিবল রিসাইজিং ও নেস্টেড অটো লেআউটের সঠিক নিয়মাবলী।',
+            summaryBn: 'Padding, gap, flexible resizing এবং nested auto layout দিয়ে রেসপনসিভ কম্পোনেন্ট তৈরির টেকনিক।',
             pdfResourceUrl: '#download-pdf-autolayout',
             pdfTitle: 'Figma_AutoLayout_Bible_BN.pdf',
           }
@@ -232,10 +232,10 @@ export const INITIAL_COURSES: Course[] = [
   },
   {
     id: 'freelancing-upwork-mastery',
-    titleBn: 'ফ্রিল্যান্সিং সাকসেস ব্লুপ্রিন্ট: আপওয়ার্ক ও ফাইভার',
-    subtitleBn: 'আন্তর্জাতিক মার্কেটপ্লেসে আকর্ষণীয় প্রোফাইল তৈরি, ক্লায়েন্ট কমিউনিকেশন ও উইনিং প্রপোজাল লেখার প্র্যাক্টিক্যাল কৌশল।',
+    titleBn: 'Freelancing Blueprint: Upwork ও Fiverr',
+    subtitleBn: 'আন্তর্জাতিক মার্কেটপ্লেসে হাই-কনভার্টিং প্রোফাইল তৈরি, ক্লায়েন্ট কমিউনিকেশন এবং উইনিং প্রপোজাল লেখার প্র্যাক্টিক্যাল গাইড।',
     category: 'freelancing',
-    categoryLabelBn: 'ফ্রিল্যান্সিং',
+    categoryLabelBn: 'Freelancing',
     instructor: 'আরিফুর রহমান',
     instructorRole: 'Top Rated Plus Freelancer, Upwork',
     enrolledCount: 2150,
@@ -247,54 +247,54 @@ export const INITIAL_COURSES: Course[] = [
     chapters: [
       {
         id: 'fl-ch-1',
-        titleBn: 'অধ্যায় ১: আন্তর্জাতিক প্রোফাইল সেটআপ ও ক্লায়েন্ট সাইকোলজি',
+        titleBn: 'অধ্যায় ১: প্রোফাইল সেটআপ ও ক্লায়েন্ট কমিউনিকেশন',
         lessons: [
           {
             id: 'fl-l-101',
-            titleBn: '১.১ আপওয়ার্ক ১০০% কমপ্লিট প্রোফাইল ও টাইটেল অপটিমাইজেশন',
+            titleBn: '১.১ Upwork 100% কমপ্লিট প্রোফাইল ও Title অপটিমাইজেশন',
             duration: '১৮ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/5p8eE9i_p6M',
-            summaryBn: 'কিওয়ার্ড রিসার্চ, আকর্ষণীয় বায়ো রাইটিং এবং পোর্টফোলিও শোকেস যা ক্লায়েন্টদের দ্রুত ইনভাইটেশন পাঠাতে বাধ্য করে।',
+            summaryBn: 'ক্লিন বায়ো রাইটিং, প্রাসঙ্গিক পোর্টফোলিও শোকেস এবং সঠিক কি-ওয়ার্ড যাতে ক্লায়েন্ট সহজে খুঁজে পায়।',
             pdfResourceUrl: '#download-pdf-freelance-profile',
             pdfTitle: 'Upwork_Profile_Winning_Formula.pdf',
           },
           {
             id: 'fl-l-102',
-            titleBn: '১.২ উইনিং প্রপোজাল রাইটিং ও ক্লায়েন্ট ইন্টারভিউ টেকনিক',
+            titleBn: '১.২ Winning Proposal Writing ও Client Interview টেকনিক',
             duration: '২৫ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/7V3jF1lC77U',
-            summaryBn: 'কপি-পেস্ট কভার লেটার পরিহার করে প্রথম দুই লাইনে ক্লায়েন্টের পেইন পয়েন্ট সমাধানের অনন্য কৌশল।',
+            summaryBn: 'কপি-পেস্ট কভার লেটার বাদ দিয়ে প্রথম দুই লাইনে ক্লায়েন্টের মূল সমস্যার সরাসরি সমাধান তুলে ধরার উপায়।',
             pdfResourceUrl: '#download-pdf-proposals',
             pdfTitle: '10_Winning_Cover_Letter_Templates.pdf',
             quiz: {
               id: 'quiz-fl-1',
-              titleBn: 'কভার লেটার ও ক্লায়েন্ট কমিউনিকেশন কুইজ',
+              titleBn: 'Cover Letter ও Client Communication কুইজ',
               passPercentage: 70,
               xpReward: 180,
               questions: [
                 {
                   id: 'q-fl-101',
-                  questionBn: 'একটি কার্যকর কভার লেটারের প্রথম দুই লাইনে কী থাকা উচিত?',
+                  questionBn: 'একটি কার্যকর কভার লেটারের প্রথম দুই লাইনে ঠিক কী লেখা উচিত?',
                   optionsBn: [
-                    'ক্লায়েন্টের স্পেসিফিক সমস্যা সমাধানের সরাসরি প্রস্তাব',
-                    'আমার নিজের পুরো জীবনের শিক্ষাগত যোগ্যতা',
-                    'একটি লম্বা শুভেচ্ছা ও জন্মস্থান বিবরণ',
-                    'দাম কমানোর অনুরোধ'
+                    'ক্লায়েন্টের নির্দিষ্ট সমস্যার স্পষ্ট সমাধান প্রস্তাব',
+                    'নিজের পুরো জীবনের শিক্ষাগত যোগ্যতার তালিকা',
+                    'একটি লম্বা ভূমিকা ও জন্মস্থানের গল্প',
+                    'দাম কমানোর জন্য অনুনয়-বিনয়'
                   ],
                   correctIndex: 0,
-                  explanationBn: 'ক্লায়েন্ট নোটিফিকেশনে কেবল প্রথম ২ লাইন প্রিভিউ দেখে। তাই সেখানে তার কাজের সরাসরি সমাধান তুলে ধরা জয়ী হওয়ার চাবিকাঠি।'
+                  explanationBn: 'ক্লায়েন্ট নোটিফিকেশনে কেবল প্রথম ২ লাইন প্রিভিউ দেখে। তাই শুরুতেই সমাধান নিয়ে কথা বললে রেসপন্স রেট বাড়ে।'
                 },
                 {
                   id: 'q-fl-102',
-                  questionBn: 'ইন্টারভিউ চলাকালীন ক্লায়েন্টের সাথে মেসেজে কোন বিষয়টিতে সবচেয়ে বেশি গুরুত্ব দেয়া উচিত?',
+                  questionBn: 'ইন্টারভিউ মেসেজে কোন জিনিসটি ক্লায়েন্টকে সবচেয়ে বেশি ভরসা দেয়?',
                   optionsBn: [
-                    'কাজের ডেলিভারি টাইমলাইন ও স্পষ্ট কমিটমেন্ট পরিষ্কার করা',
-                    'দ্রুত পেমেন্ট চেয়ে ফেলা',
+                    'কাজের ডেলিভারি টাইমলাইন ও স্টেপ-বাই-স্টেপ স্পষ্ট প্ল্যান তুলে ধরা',
+                    'তাড়াহুড়ো করে অগ্রিম পেমেন্ট চেয়ে ফেলা',
                     'মার্কেটপ্লেসের বাইরে কথা বলতে জোর করা',
-                    'ভুল তথ্য দিয়ে কাজ নেওয়া'
+                    'অবাস্তব প্রতিশ্রুতি দিয়ে ভুল তথ্য দেওয়া'
                   ],
                   correctIndex: 0,
-                  explanationBn: 'প্রফেশনাল ফ্রিল্যান্সাররা সবসময় ক্লায়েন্টকে ডেডলাইন ও কাজের প্রতিটি ধাপের স্পষ্ট রূপরেখা দিয়ে ভরসা যোগান।'
+                  explanationBn: 'প্রফেশনাল ফ্রিল্যান্সাররা সবসময় ক্লায়েন্টকে স্পষ্ট ডেডলাইন ও ডেলিভারি প্ল্যান দিয়ে ভরসা যোগান।'
                 }
               ]
             }
@@ -305,10 +305,10 @@ export const INITIAL_COURSES: Course[] = [
   },
   {
     id: 'motion-graphics-editing',
-    titleBn: 'মোশন গ্রাফিক্স ও ভিডিও এডিটিং উইথ প্রিমিয়ার প্রো',
-    subtitleBn: 'ইউটিউব কনটেন্ট, কমার্শিয়াল বিজ্ঞাপন ও সোশ্যাল মিডিয়ার জন্য ট্রেন্ডি অ্যানিমেশন এবং ভিজ্যুয়াল স্টোরিটেলিং।',
+    titleBn: 'Video Editing ও Motion Graphics with Premiere Pro',
+    subtitleBn: 'YouTube কনটেন্ট, বিজ্ঞাপন ও সোশ্যাল মিডিয়ার জন্য ট্রেন্ডি ভিডিও এডিটিং, কালার গ্রেডিং ও অ্যানিমেশন ক্রাফট।',
     category: 'graphics',
-    categoryLabelBn: 'গ্রাফিক্স ও ভিডিও',
+    categoryLabelBn: 'Video & Motion',
     instructor: 'রাকিব তানজিম',
     instructorRole: 'Visual Director & Animator',
     enrolledCount: 740,
@@ -319,14 +319,14 @@ export const INITIAL_COURSES: Course[] = [
     chapters: [
       {
         id: 'mg-ch-1',
-        titleBn: 'অধ্যায় ১: ভিডিও এডিটিংয়ের টাইমলাইন ও কাটিং ক্রাফট',
+        titleBn: 'অধ্যায় ১: ভিডিও এডিটিং টাইমলাইন ও কাটিং ক্রাফট',
         lessons: [
           {
             id: 'mg-l-101',
-            titleBn: '১.১ সিকোয়েন্স সেটিংস, প্রক্সি ওয়ার্কফ্লো ও বি-রোল সিঙ্ক',
+            titleBn: '১.১ Sequence Settings, Proxy Workflow ও B-Roll Sync',
             duration: '২১ মিনিট',
             videoUrl: 'https://www.youtube.com/embed/u73-zM4pWqE',
-            summaryBn: 'স্মুথ প্লেব্যাকের জন্য প্রক্সি তৈরি এবং গল্পের ছন্দ বজায় রেখে এ-রোল ও বি-রোল কাটার নিয়মাবলী।',
+            summaryBn: 'স্মুথ প্লেব্যাকের জন্য Proxy তৈরি এবং গল্পের ছন্দ বজায় রেখে A-Roll ও B-Roll কাটার নিয়মাবলী।',
             pdfResourceUrl: '#download-pdf-premiere',
             pdfTitle: 'Premiere_Pro_Shortcuts_Map_BN.pdf',
           }
@@ -340,12 +340,12 @@ export const INITIAL_COMMUNITY_THREADS: CommunityThread[] = [
   {
     id: 'thread-1',
     courseId: 'web-dev-fullstack',
-    courseTitleBn: 'ফুলস্ট্যাক ওয়েব ডেভেলপমেন্ট উইথ রিয়্যাক্ট ও নোড.জেএস',
+    courseTitleBn: 'Full-Stack Web Development with React ও Node.js',
     authorName: 'তানভীর আহমেদ',
     authorRole: 'student',
     createdAt: '২ ঘণ্টা আগে',
-    titleBn: 'useEffect এ অবজেক্ট ডিপেনডেন্সি দিলে কি ইনফিনিট লুপ তৈরি হতে পারে?',
-    contentBn: 'আমি যখন useEffect এর ডিপেনডেন্সিতে একটি লোকাল অবজেক্ট দিচ্ছি, প্রতি রেন্ডারে তা নতুন মেমোরি রেফারেন্স তৈরি করে আবার ইফেক্ট রান করাচ্ছে। এটি সমাধানের সঠিক উপায় কী? useMemo ব্যবহার করব নাকি প্রোপার্টিগুলো আলাদা করব?',
+    titleBn: 'useEffect-এ object dependency দিলে কি infinite loop হতে পারে?',
+    contentBn: 'আমি যখন useEffect-এর dependency-তে একটা local object দিচ্ছি, প্রতি render-এ নতুন মেমরি রেফারেন্স তৈরি হয়ে আবার effect রান করছে। এটা সমাধান করার সঠিক নিয়ম কী? useMemo ব্যবহার করব নাকি specific properties পাস করব?',
     upvotes: 18,
     userUpvoted: false,
     isPinned: true,
@@ -355,7 +355,7 @@ export const INITIAL_COMMUNITY_THREADS: CommunityThread[] = [
         authorName: 'মাহমুদুল হাসান',
         authorRole: 'instructor',
         createdAt: '১ ঘণ্টা আগে',
-        contentBn: 'খুব চমৎকার ও প্রাসঙ্গিক প্রশ্ন তানভীর! জাভাস্ক্রিপ্টে অবজেক্টগুলো রেফারেন্সে চেক হয় (===)। আপনি অবজেক্টের নির্দিষ্ট প্রিমিটিভ প্রোপার্টি (যেমন: user.id) ডিপেনডেন্সি হিসেবে দিতে পারেন অথবা সম্পূর্ণ অবজেক্টের জন্য useMemo হুক দিয়ে মেমোইজ করে রাখতে পারেন।',
+        contentBn: 'দারুণ ও প্রাসঙ্গিক প্রশ্ন তানভীর! JavaScript-এ objects চেক হয় memory reference দিয়ে (===)। সমাধান হিসেবে object-এর নির্দিষ্ট primitive property (যেমন user.id) dependency হিসেবে দিতে পারো, অথবা পুরো অবজেক্ট দরকার হলে useMemo হুক দিয়ে memoize করে নিতে পারো।',
         upvotes: 14
       },
       {
@@ -363,7 +363,7 @@ export const INITIAL_COMMUNITY_THREADS: CommunityThread[] = [
         authorName: 'নুসরাত জাহান',
         authorRole: 'student',
         createdAt: '৪৫ মিনিট আগে',
-        contentBn: 'ধন্যবাদ ভাইয়া! আমিও সেইম সমস্যায় পড়েছিলাম, প্রোপার্টি স্পেসিফিক দিয়ে এখন ঠিক কাজ করছে।',
+        contentBn: 'থ্যাংকস ভাইয়া! আমিও সেইম সমস্যায় পড়েছিলাম, specific property পাস করতে এখন একদম ঠিক কাজ করছে।',
         upvotes: 4
       }
     ]
@@ -371,12 +371,12 @@ export const INITIAL_COMMUNITY_THREADS: CommunityThread[] = [
   {
     id: 'thread-2',
     courseId: 'freelancing-upwork-mastery',
-    courseTitleBn: 'ফ্রিল্যান্সিং সাকসেস ব্লুপ্রিন্ট: আপওয়ার্ক ও ফাইভার',
+    courseTitleBn: 'Freelancing Blueprint: Upwork ও Fiverr',
     authorName: 'সাদিয়া ইসলাম',
     authorRole: 'student',
     createdAt: '৫ ঘণ্টা আগে',
-    titleBn: 'নতুন একাউন্টে কত কানেক্টস দিয়ে প্রথম প্রপোজাল পাঠানো নিরাপদ?',
-    contentBn: 'আপওয়ার্কে প্রথম প্রোফাইল এপ্রুভ হওয়ার পর আমি ১৬ কানেক্টস দিয়ে বুস্টিং করব নাকি সাধারণ ৮ বা ১২ কানেক্টসে বিড করা বুদ্ধিমানের কাজ হবে?',
+    titleBn: 'নতুন একাউন্টে কত connects দিয়ে প্রথম proposal পাঠানো ভালো?',
+    contentBn: 'Upwork-এ প্রোফাইল approve হওয়ার পর শুরুতেই connects খরচ করে boost করা ভালো, নাকি সাধারণ ৮ বা ১২ connects-এ বিড করাই যথেষ্ট?',
     upvotes: 12,
     userUpvoted: true,
     replies: [
@@ -385,7 +385,7 @@ export const INITIAL_COMMUNITY_THREADS: CommunityThread[] = [
         authorName: 'আরিফুর রহমান',
         authorRole: 'instructor',
         createdAt: '৩ ঘণ্টা আগে',
-        contentBn: 'শুরুতে বুস্টিংয়ে বেশি কানেক্টস অপচয় না করে যেসব জবে প্রপোজাল ৫ এর কম জমা পড়েছে এবং ক্লায়েন্টের পেমেন্ট ভেরিফাইড, সেখানে দ্রুত ও প্রাসঙ্গিক কভার লেটার দিয়ে আবেদন করুন। এটি প্রথম জব পাওয়ার সেরা রাস্তা।',
+        contentBn: 'শুরুতেই boosting-এ connects নষ্ট না করে যেসব জবে proposal সংখ্যা ৫-এর কম আর ক্লায়েন্টের পেমেন্ট ভেরিফাইড, সেখানে দ্রুত ও প্রাসঙ্গিক কভার লেটার পাঠাও। শুরুর কাজ পেতে এটাই সবচেয়ে কার্যকর উপায়।',
         upvotes: 19
       }
     ]
@@ -393,12 +393,12 @@ export const INITIAL_COMMUNITY_THREADS: CommunityThread[] = [
   {
     id: 'thread-3',
     courseId: 'uiux-figma-mastery',
-    courseTitleBn: 'ইউআই/ইউএক্স ডিজাইন অ্যান্ড ফিগমা প্রো মাস্টারক্লাস',
+    courseTitleBn: 'UI/UX Design ও Figma Mastery',
     authorName: 'তাহমিদ হক',
     authorRole: 'student',
     createdAt: '১ দিন আগে',
-    titleBn: 'বাংলা ফন্টের ক্ষেত্রে ফিগমা অটো-লেআউটে লাইন হাইট কত রাখা আদর্শ?',
-    contentBn: 'ইংরেজি ফন্টের তুলনায় বাংলা যুক্তবর্ণ বা হ্রস্ব-ই কার/দী্র্ঘ-ঈ কার উপরে-নিচে কেটে যায় যদি লাইন হাইট কম থাকে। আপনাদের স্ট্যান্ডার্ড রেসিপি কী?',
+    titleBn: 'বাংলা ফন্টের ক্ষেত্রে Figma Auto Layout-এ line height কত রাখা ভালো?',
+    contentBn: 'ইংরেজি ফন্টের তুলনায় বাংলা যুক্তবর্ণ বা হ্রস্ব-ই/দীর্ঘ-ঈ কার উপরে-নিচে কেটে যায় যদি line height কম থাকে। আপনারা সচরাচর কত রাখেন?',
     upvotes: 21,
     userUpvoted: false,
     replies: [
@@ -407,7 +407,7 @@ export const INITIAL_COMMUNITY_THREADS: CommunityThread[] = [
         authorName: 'সাবরিনা আক্তার',
         authorRole: 'instructor',
         createdAt: '১৮ ঘণ্টা আগে',
-        contentBn: 'বাংলা টাইপোগ্রাফির জন্য সবসময় ফন্ট সাইজের চেয়ে অন্তত ৬০% থেকে ৭০% বেশি লাইন হাইট (যেমন: ১৬ পিক্সেল ফন্টে ২৫-২৬ পিক্সেল লাইনহাইট) দেওয়া উচিত। Hind Siliguri বা Tiro Bangla ব্যবহারে এই রেসিপি সবচেয়ে ভালো কাজ করে।',
+        contentBn: 'বাংলা ফন্টের জন্য সবসময় font-size-এর চেয়ে অন্তত ৬০% থেকে ৭০% বেশি line-height (যেমন ১৬px ফন্টের জন্য ২৫-২৬px line-height) রাখা ভালো। Hind Siliguri বা Tiro Bangla-য় এটা ব্যবহার করলে টাইপোগ্রাফি দারুণ দেখায়।',
         upvotes: 17
       }
     ]
