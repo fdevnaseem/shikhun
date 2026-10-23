@@ -28,11 +28,11 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
   return (
     <div className="relative space-y-28 pb-24 pt-6 sm:pt-10">
       
-      {/* Continuous Full-Viewport 3D Mascot Canvas (Follows the scroll corridors) */}
+      {/* Continuous Full-Viewport 3D Mascot Canvas (Only on large screens >= 1024px) */}
       <ThreeHeroCanvas />
 
-      {/* 1. HERO SECTION (Left Weighted: Mascot travels on Right) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 1. HERO SECTION (Left Weighted: Mascot is on Right) */}
+      <section id="section-hero" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-2xl lg:pr-8 space-y-6 text-left relative z-20">
           
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-50/90 border border-indigo-200/60 rounded-md text-xs text-indigo-700 shadow-2xs">
@@ -95,8 +95,8 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 2. WHAT IS SHIKHUN (Right Weighted: Mascot travels on Left) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 2. WHAT IS SHIKHUN (Right Weighted: Mascot is on Left) */}
+      <section id="section-about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-3xl ml-auto lg:pl-10 relative z-20 space-y-6">
           
           <div className="space-y-2 text-left">
@@ -164,8 +164,8 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 3. 3-STEP LEARNING METHODOLOGY (Left Weighted: Mascot travels on Right) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 3. 3-STEP LEARNING METHODOLOGY (Left Weighted: Mascot is on Right) */}
+      <section id="section-methodology" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div className="max-w-2xl lg:pr-8 relative z-20 space-y-6">
           
           <div className="space-y-2 text-left">
@@ -218,8 +218,8 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 4. CURATED CAREER TRACKS (Full Width Corridor) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+      {/* 4. CURATED CAREER TRACKS (Full Width Corridor: Mascot is Upper Right) */}
+      <section id="section-tracks" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-24">
         <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-lg p-8 sm:p-12 space-y-8 shadow-sm">
           
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
@@ -357,8 +357,8 @@ export const MarketingHome: React.FC<MarketingHomeProps> = ({
         </div>
       </section>
 
-      {/* 6. FINAL ACTION BANNER (Mascot Celebrates at Center) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+      {/* 6. FINAL ACTION BANNER (Mascot Centers Down) */}
+      <section id="section-cta" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 scroll-mt-24">
         <div className="bg-indigo-600 text-white rounded-lg p-8 sm:p-12 text-center space-y-6 shadow-sm">
           <div className="max-w-2xl mx-auto space-y-2">
             <h2 className="text-2xl sm:text-3xl font-medium tracking-tight">

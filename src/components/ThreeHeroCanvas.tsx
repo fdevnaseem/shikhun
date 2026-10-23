@@ -5,6 +5,9 @@ export const ThreeHeroCanvas: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Large screens only (>= 1024px)
+    if (window.innerWidth < 1024) return;
+
     const container = mountRef.current;
     if (!container) return;
 
@@ -23,7 +26,7 @@ export const ThreeHeroCanvas: React.FC = () => {
       }
     })();
 
-    // Scene & Camera (Full viewport setup)
+    // Scene & Camera setup
     const scene = new THREE.Scene();
     
     let width = window.innerWidth;
@@ -91,7 +94,7 @@ export const ThreeHeroCanvas: React.FC = () => {
     rightEye.position.set(0.35, 0.18, 1.05);
     mascotGroup.add(rightEye);
 
-    // Pupil Specular Highlights (Cute glints)
+    // Specular Glints
     const glintGeo = new THREE.SphereGeometry(0.06, 12, 12);
     const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
@@ -103,7 +106,7 @@ export const ThreeHeroCanvas: React.FC = () => {
     rightGlint.position.set(0.39, 0.26, 1.16);
     mascotGroup.add(rightGlint);
 
-    // Cute Cheeks (Blushing pink)
+    // Cute Blushing Cheeks
     const blushGeo = new THREE.CircleGeometry(0.16, 16);
     const blushMat = new THREE.MeshBasicMaterial({
       color: 0xf472b6,
@@ -152,7 +155,7 @@ export const ThreeHeroCanvas: React.FC = () => {
     tassel.rotation.z = Math.PI / 6;
     mascotGroup.add(tassel);
 
-    // 4. Orbiting Skill Satellites
+    // 4. Orbiting Skill Satellites (Steady calm orbits)
     // Orbit 1: Emerald React Code Cube
     const cubeGeo = new THREE.BoxGeometry(0.36, 0.36, 0.36);
     const cubeMat = new THREE.MeshStandardMaterial({
@@ -195,8 +198,8 @@ export const ThreeHeroCanvas: React.FC = () => {
     orbitRing.rotation.y = Math.PI / 10;
     mascotGroup.add(orbitRing);
 
-    // Initial position on the right (Hero view)
-    mascotGroup.position.set(2.4, 0.2, 0);
+    // Initial position parked at Hero (Right side)
+    mascotGroup.position.set(2.4, 0.15, 0);
 
     // Mouse Tracking
     let mouseX = 0;
@@ -214,6 +217,7 @@ export const ThreeHeroCanvas: React.FC = () => {
 
     // Window Resize Handler
     const handleResize = () => {
+      if (window.innerWidth < 1024) return;
       width = window.innerWidth;
       height = window.innerHeight;
       camera.aspect = width / height;
@@ -222,131 +226,122 @@ export const ThreeHeroCanvas: React.FC = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    // Animation & Waypoint Loop
+    // Steady Orbit Angle Accumulator (Completely insulated from scroll speed!)
+    let orbitPhase = 0;
+
+    // DOM Section Anchors for Exact Spatial Positioning
+    const getTargetCoordinatesFromDOM = () => {
+      const viewportCenterY = window.innerHeight * 0.45;
+
+      // Section target definitions
+      const sections = [
+        { id: 'section-hero', x: 2.45, y: 0.15, z: 0, scale: 1.05 },
+        { id: 'section-about', x: -2.45, y: -0.1, z: 0, scale: 1.0 },
+        { id: 'section-methodology', x: 2.45, y: 0.15, z: 0, scale: 1.05 },
+        { id: 'section-tracks', x: 1.9, y: 1.6, z: -0.8, scale: 0.85 },
+        { id: 'section-cta', x: 0, y: 0.2, z: 0, scale: 1.15 }
+      ];
+
+      // Measure distance of each section's top from viewport center
+      const measurements = sections.map((sec) => {
+        const el = document.getElementById(sec.id);
+        if (!el) return { ...sec, dist: 99999, top: 99999 };
+        const rect = el.getBoundingClientRect();
+        const centerY = rect.top + rect.height * 0.35;
+        return {
+          ...sec,
+          dist: Math.abs(centerY - viewportCenterY),
+          top: centerY
+        };
+      });
+
+      // Sort by closest to viewport center
+      measurements.sort((a, b) => a.dist - b.dist);
+      const closest = measurements[0];
+      const secondClosest = measurements[1];
+
+      // Blend smoothly between the two closest sections
+      if (!secondClosest || secondClosest.dist > 1500) {
+        return { x: closest.x, y: closest.y, z: closest.z, scale: closest.scale };
+      }
+
+      const totalDist = closest.dist + secondClosest.dist;
+      const weightClosest = 1 - (closest.dist / totalDist);
+      const weightSecond = 1 - weightClosest;
+
+      return {
+        x: closest.x * weightClosest + secondClosest.x * weightSecond,
+        y: closest.y * weightClosest + secondClosest.y * weightSecond,
+        z: closest.z * weightClosest + secondClosest.z * weightSecond,
+        scale: closest.scale * weightClosest + secondClosest.scale * weightSecond
+      };
+    };
+
+    // Animation Loop
     let animationFrameId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
-      const delta = clock.getDelta();
+      const delta = Math.min(clock.getDelta(), 0.1);
       const elapsed = clock.getElapsedTime();
 
-      // Smooth mouse interpolation
-      mouseX = THREE.MathUtils.damp(mouseX, targetMouseX, 5, delta);
-      mouseY = THREE.MathUtils.damp(mouseY, targetMouseY, 5, delta);
+      // 1. Smooth mouse interpolation
+      mouseX = THREE.MathUtils.damp(mouseX, targetMouseX, 4, delta);
+      mouseY = THREE.MathUtils.damp(mouseY, targetMouseY, 4, delta);
 
-      // Scroll fraction calculation across entire page
-      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const scrollRatio = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      // 2. Exact DOM Section Coordinates
+      const targetPos = getTargetCoordinatesFromDOM();
 
-      // Continuous Waypoint Interpolation:
-      // Hero (0 - 20%): Right Flank (x: +2.4, y: 0.2)
-      // About (25 - 45%): Glides to Left Flank (x: -2.6, y: -0.1)
-      // Steps (50 - 70%): Glides to Right Flank (x: +2.3, y: 0.1)
-      // Tracks (75 - 90%): Glides to Top Center (x: 0, y: 2.0, z: -1.2)
-      // CTA (92 - 100%): Centers down (x: 0, y: -0.2, z: 0)
+      // Breathing idle bob
+      const breathingBob = Math.sin(elapsed * 1.8) * 0.06;
+      const finalX = targetPos.x + mouseX * 0.4;
+      const finalY = targetPos.y + breathingBob - mouseY * 0.4;
+      const finalZ = targetPos.z;
 
-      let targetX = 2.4;
-      let targetY = 0.2;
-      let targetZ = 0;
-      let targetScale = 1.0;
-
-      // On mobile screens, scale mascot down and keep centered or softly offset
-      const isMobile = window.innerWidth < 1024;
-
-      if (isMobile) {
-        targetScale = 0.65;
-        targetX = Math.sin(scrollRatio * Math.PI * 3) * 0.8;
-        targetY = Math.cos(scrollRatio * Math.PI * 2) * 0.8;
-      } else {
-        if (scrollRatio < 0.22) {
-          // Hero: Right flank
-          const t = scrollRatio / 0.22;
-          targetX = 2.4 + Math.sin(t * Math.PI) * 0.2;
-          targetY = 0.2;
-          targetScale = 1.05;
-        } else if (scrollRatio < 0.48) {
-          // Transition across screen from Right (+2.4) to Left (-2.6)
-          const t = (scrollRatio - 0.22) / 0.26;
-          // Smooth cosine curve
-          const ease = (1 - Math.cos(t * Math.PI)) / 2;
-          targetX = 2.4 - ease * 5.0; // from +2.4 to -2.6
-          targetY = 0.2 - ease * 0.3;
-          targetScale = 1.0;
-        } else if (scrollRatio < 0.72) {
-          // Transition back across from Left (-2.6) to Right (+2.3)
-          const t = (scrollRatio - 0.48) / 0.24;
-          const ease = (1 - Math.cos(t * Math.PI)) / 2;
-          targetX = -2.6 + ease * 4.9; // from -2.6 to +2.3
-          targetY = -0.1 + ease * 0.2;
-          targetScale = 1.02;
-        } else if (scrollRatio < 0.90) {
-          // Glides to Top Center above tracks
-          const t = (scrollRatio - 0.72) / 0.18;
-          const ease = (1 - Math.cos(t * Math.PI)) / 2;
-          targetX = 2.3 - ease * 2.3; // to 0
-          targetY = 0.1 + ease * 1.8; // to +1.9
-          targetZ = -ease * 1.2;
-          targetScale = 0.85;
-        } else {
-          // CTA: Lands at center
-          const t = (scrollRatio - 0.90) / 0.10;
-          const ease = (1 - Math.cos(t * Math.PI)) / 2;
-          targetX = 0;
-          targetY = 1.9 - ease * 2.1; // to -0.2
-          targetZ = -1.2 + ease * 1.2;
-          targetScale = 1.15;
-        }
-      }
-
-      // Add gentle breathing bob + subtle mouse parallax
-      const breathingBob = Math.sin(elapsed * 2) * 0.08;
-      const finalX = targetX + mouseX * 0.5;
-      const finalY = targetY + breathingBob - mouseY * 0.5;
-
-      mascotGroup.position.x = THREE.MathUtils.damp(mascotGroup.position.x, finalX, 3.5, delta);
-      mascotGroup.position.y = THREE.MathUtils.damp(mascotGroup.position.y, finalY, 3.5, delta);
-      mascotGroup.position.z = THREE.MathUtils.damp(mascotGroup.position.z, targetZ, 3.5, delta);
+      // Smooth position dampening
+      mascotGroup.position.x = THREE.MathUtils.damp(mascotGroup.position.x, finalX, 3.2, delta);
+      mascotGroup.position.y = THREE.MathUtils.damp(mascotGroup.position.y, finalY, 3.2, delta);
+      mascotGroup.position.z = THREE.MathUtils.damp(mascotGroup.position.z, finalZ, 3.2, delta);
 
       const currentScale = mascotGroup.scale.x;
-      const newScale = THREE.MathUtils.damp(currentScale, targetScale, 3.5, delta);
+      const newScale = THREE.MathUtils.damp(currentScale, targetPos.scale, 3.2, delta);
       mascotGroup.scale.set(newScale, newScale, newScale);
 
-      // Mascot gentle body rotation (looks towards mouse + soft tilt)
-      const targetRotY = mouseX * 0.6 + Math.sin(elapsed * 0.8) * 0.15;
-      const targetRotX = -mouseY * 0.4 + Math.cos(elapsed * 0.6) * 0.08;
+      // Mascot head rotation towards cursor
+      const targetRotY = mouseX * 0.5 + Math.sin(elapsed * 0.7) * 0.1;
+      const targetRotX = -mouseY * 0.35 + Math.cos(elapsed * 0.5) * 0.06;
       mascotGroup.rotation.y = THREE.MathUtils.damp(mascotGroup.rotation.y, targetRotY, 4, delta);
       mascotGroup.rotation.x = THREE.MathUtils.damp(mascotGroup.rotation.x, targetRotX, 4, delta);
 
-      // Orbiting Satellites Speed & Position
-      const orbitSpeed = 1.2 + scrollRatio * 2.5;
+      // 3. Steady, Calm Orbiting Satellites (Delta-based, ZERO scroll jump spikes)
+      orbitPhase += 0.75 * delta;
 
       // React Code Cube
-      const angle1 = elapsed * orbitSpeed;
       cubeNode.position.set(
-        Math.cos(angle1) * 2.1,
-        Math.sin(angle1) * 0.9,
-        Math.sin(angle1) * 1.6
+        Math.cos(orbitPhase) * 2.1,
+        Math.sin(orbitPhase) * 0.85,
+        Math.sin(orbitPhase) * 1.6
       );
-      cubeNode.rotation.x += 2 * delta;
-      cubeNode.rotation.y += 1.5 * delta;
+      cubeNode.rotation.x += 1.2 * delta;
+      cubeNode.rotation.y += 1.0 * delta;
 
       // Figma Design Diamond
-      const angle2 = elapsed * (orbitSpeed * 0.85) + Math.PI * 0.66;
+      const angle2 = orbitPhase * 0.9 + 2.09;
       octaNode.position.set(
         Math.sin(angle2) * 2.2,
-        Math.cos(angle2) * 1.1,
+        Math.cos(angle2) * 1.05,
         Math.cos(angle2) * 1.5
       );
-      octaNode.rotation.y += 2.5 * delta;
+      octaNode.rotation.y += 1.5 * delta;
 
       // Freelancing Coin
-      const angle3 = elapsed * (orbitSpeed * 0.7) + Math.PI * 1.33;
+      const angle3 = orbitPhase * 0.78 + 4.18;
       coinNode.position.set(
         Math.cos(angle3) * 2.3,
-        -Math.sin(angle3) * 0.9,
+        -Math.sin(angle3) * 0.85,
         Math.sin(angle3) * 1.8
       );
-      coinNode.rotation.x += 2 * delta;
+      coinNode.rotation.x += 1.3 * delta;
 
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
@@ -392,7 +387,7 @@ export const ThreeHeroCanvas: React.FC = () => {
   return (
     <div 
       ref={mountRef} 
-      className="fixed inset-0 pointer-events-none z-10 select-none overflow-hidden" 
+      className="hidden lg:block fixed inset-0 pointer-events-none z-10 select-none overflow-hidden" 
       aria-hidden="true"
     />
   );
